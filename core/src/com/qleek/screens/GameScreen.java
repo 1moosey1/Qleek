@@ -70,9 +70,6 @@ public class GameScreen implements Screen {
 		
 		hud.act(delta);
 		hud.draw();
-		
-		//qleek.batch.begin();
-		//qleek.batch.end();
 	}
 
 	@Override
