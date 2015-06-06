@@ -1,98 +1,60 @@
 package com.qleek.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.viewport.*;
 import com.qleek.Qleek;
 
-public class GameScreen implements Screen {
-	
-	private final Qleek qleek;
-	private Stage hud;
-	private Table hudLayout;
+public class GameScreen extends BaseScreen {
 	
 	public GameScreen(Qleek game) {
 		
-		qleek = game;
+		super(game);
+		Gdx.input.setInputProcessor(HUD);
 		
-		hud = new Stage(new ScreenViewport(), qleek.batch);
+		create();
+	}
+	
+	public void create() {
 		
-		//InputMultiplexer ip = new InputMultiplexer();
-		//ip.addProcessor(hud);
-		Gdx.input.setInputProcessor(hud);
-		
-		hudLayout = new Table();
-		hudLayout.setDebug(true);
-		hudLayout.setFillParent(true);
-		hud.addActor(hudLayout);
-		
-		Skin uiskin = new Skin(Gdx.files.internal("uiskin.json"));		
-		Label testLabel = new Label("Label Test", uiskin);
-		TextButton testButton = new TextButton("Button Test", uiskin);
-		
+		Label testLabel = new Label("Label Test", uiSkin);
+		TextButton testButton = new TextButton("Button Test", uiSkin);
 		
 		testButton.addListener(new InputListener() {
 			
 			@Override
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-		        System.out.println("down");
+		        qleek.setScreen(qleek.shopScreen);
 		        return true;
 		    }
 		});
 		
 		
-		hudLayout.add(testLabel).width(100).height(100);
-		hudLayout.row();
-		hudLayout.add(testButton).width(100).height(100);
+		layout.add(testLabel).width(100).height(100);
+		layout.row();
+		layout.add(testButton).width(100).height(100);
+		layout.add(headerWidget.getLayout());
 	}
-	
-	public void create() {}
 
 	@Override
-	public void show() {
-		
-	}
+	public void show() {}
 
 	@Override
 	public void render(float delta) {
-		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		hud.act(delta);
-		hud.draw();
+		super.render(delta);
 	}
 
 	@Override
-	public void resize(int width, int height) {}
+	public void pause() {}
 
 	@Override
-	public void pause() {
-		
-	}
+	public void resume() {}
 
 	@Override
-	public void resume() {
-		
-	}
+	public void hide() {}
 
 	@Override
-	public void hide() {
-		
-	}
-
-	@Override
-	public void dispose() {
-		
-		hud.dispose();
-	}
+	public void dispose() {}
 }
