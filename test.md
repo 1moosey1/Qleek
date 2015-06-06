@@ -1,2 +1,0 @@
-# Qleek
-Qleek the Cat
