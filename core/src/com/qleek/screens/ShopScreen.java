@@ -13,6 +13,12 @@ public class ShopScreen extends BaseScreen {
 	@Override
 	void create() {
 		
-		layout.add(headerWidget.getLayout());
+		screenLayout.add(headerWidget.getLayout());
 	}
+
+	@Override
+	public void show() {}
+
+	@Override
+	public void hide() {}
 }

@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.*;
 import com.qleek.Qleek;
 
 public abstract class BaseScreen implements Screen {
@@ -17,7 +17,7 @@ public abstract class BaseScreen implements Screen {
 	protected final Qleek qleek;
 	protected final Stage HUD;
 	protected VerticalGroup HUDLayout;
-	protected Table layout;
+	protected Table screenLayout;
 	
 	protected final Skin uiSkin;
 	
@@ -29,18 +29,17 @@ public abstract class BaseScreen implements Screen {
 		HUD = new Stage(new ScreenViewport(), qleek.batch);
 		uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
 		
-		layout = new Table();
-		layout.setDebug(true);
-		layout.setFillParent(true);
-		HUD.addActor(layout);
+		screenLayout = new Table();
+		screenLayout.setDebug(true);
+		screenLayout.setFillParent(true);
+		screenLayout.defaults().expand().uniform();
+		HUD.addActor(screenLayout);
 		
 		headerWidget = new HeaderWidget(uiSkin);
 	}
 	
 	abstract void create();
 
-	@Override
-	public void show() {}
 
 	@Override
 	public void render(float delta) {
@@ -60,9 +59,6 @@ public abstract class BaseScreen implements Screen {
 
 	@Override
 	public void resume() {}
-
-	@Override
-	public void hide() {}
 
 	@Override
 	public void dispose() {
