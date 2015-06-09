@@ -5,10 +5,11 @@ import widgets.HeaderWidget;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.viewport.*;
 import com.qleek.Qleek;
 
@@ -16,36 +17,73 @@ public abstract class BaseScreen implements Screen {
 	
 	protected final Qleek qleek;
 	protected final Stage HUD;
-	protected VerticalGroup HUDLayout;
 	protected Table screenLayout;
 	
-	protected final Skin uiSkin;
+	protected Skin uiSkin = Qleek.skin;
+	protected HeaderWidget headerWidget;
 	
-	protected static HeaderWidget headerWidget;
+	private InputListener headerHandler;
 	
 	public BaseScreen(Qleek game) {
 		
 		qleek = game;
+		
 		HUD = new Stage(new ScreenViewport(), qleek.batch);
-		uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
-		
 		screenLayout = new Table();
-		screenLayout.setDebug(true);
-		screenLayout.setFillParent(true);
-		screenLayout.defaults().expand().uniform();
-		HUD.addActor(screenLayout);
-		
 		headerWidget = new HeaderWidget(uiSkin);
+
+		create();
 	}
 	
-	abstract void create();
-
+	private void create() {
+		
+		screenLayout.setDebug(true);
+		screenLayout.setFillParent(true);
+		screenLayout.defaults().expand();
+		HUD.addActor(screenLayout);	
+		
+		// Row One
+		screenLayout.add(headerWidget.getLayout()).fill().top()
+			.height(Gdx.graphics.getHeight() * 0.20F);
+		screenLayout.row();
+		
+		// Anon class for handling header buttons
+		headerHandler = new InputListener() {
+			
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+		 		return true;
+		 	}
+			
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				
+				String name = event.getListenerActor().getName();
+				
+				if(name == headerWidget.backButtonName()) 
+					qleek.setScreen(qleek.gameScreen);
+				
+				else if(name == headerWidget.optionsButtonName())
+					qleek.setScreen(qleek.gameScreen);
+			}
+		};
+		
+		headerWidget.addListener(headerHandler);
+	}
+	
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(HUD);
+	}
 
 	@Override
 	public void render(float delta) {
+
+		qleek.player.update(delta);
+		headerWidget.updateDisplay(qleek.player);
 		
 		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);	
 		
 		HUD.act(delta);
 		HUD.draw();
@@ -59,6 +97,9 @@ public abstract class BaseScreen implements Screen {
 
 	@Override
 	public void resume() {}
+	
+	@Override
+	public void hide() {}
 
 	@Override
 	public void dispose() {

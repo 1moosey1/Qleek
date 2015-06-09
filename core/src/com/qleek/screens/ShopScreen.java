@@ -10,15 +10,10 @@ public class ShopScreen extends BaseScreen {
 		create();
 	}
 
-	@Override
-	void create() {
+	private void create() {
 		
-		screenLayout.add(headerWidget.getLayout());
+		// ----- screenLayout 2 x 1 -----
+		
+		// ----- End screenLayout -----
 	}
-
-	@Override
-	public void show() {}
-
-	@Override
-	public void hide() {}
 }

@@ -1,31 +1,40 @@
 package com.qleek;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.qleek.screens.*;
 
 public class Qleek extends Game {
 	
 	public SpriteBatch batch;
-	public BaseScreen gameScreen, shopScreen;
+	public static Skin skin;
+	
+	public Player player;
+	public BaseScreen gameScreen, paegantScreen, shopScreen,
+		inventoryScreen, wwyScreen;
 	
 	@Override
 	public void create () {
 		
 		batch = new SpriteBatch();
+		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		
+		player = new Player();
 		gameScreen = new GameScreen(this);
+		paegantScreen = new PaegantScreen(this);
 		shopScreen = new ShopScreen(this);
+		inventoryScreen = new InventoryScreen(this);
+		wwyScreen = new WWYScreen(this);
 		
 		setScreen(gameScreen);
 	}
-
-	@Override
-	public void render () {
-		super.render();
-	}
 	
+	@Override
 	public void dispose() {	
+		
 		batch.dispose();
+		gameScreen.dispose();
 	}
 }
