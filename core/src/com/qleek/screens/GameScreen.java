@@ -134,6 +134,13 @@ public class GameScreen extends BaseScreen {
 		headerWidget.enableBack();
 	}
 	
+	@Override
+	public void dispose() {
+		
+		super.dispose();
+		texture.dispose();
+	}
+	
 	private class ScreenProcessor implements InputProcessor {
 		
 		private int tdx, tdy, cumulatedDistance;

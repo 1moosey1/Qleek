@@ -1,7 +1,5 @@
 package com.qleek.screens;
 
-import widgets.HeaderWidget;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,8 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.viewport.*;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
+import com.qleek.widgets.HeaderWidget;
 
 public abstract class BaseScreen implements Screen {
 	
@@ -22,7 +21,7 @@ public abstract class BaseScreen implements Screen {
 	protected Skin uiSkin = Qleek.skin;
 	protected HeaderWidget headerWidget;
 	
-	private InputListener headerHandler;
+	private InputListener headerListener;
 	
 	public BaseScreen(Qleek game) {
 		
@@ -30,7 +29,7 @@ public abstract class BaseScreen implements Screen {
 		
 		HUD = new Stage(new ScreenViewport(), qleek.batch);
 		screenLayout = new Table();
-		headerWidget = new HeaderWidget(uiSkin);
+		headerWidget = new HeaderWidget();
 
 		create();
 	}
@@ -48,7 +47,7 @@ public abstract class BaseScreen implements Screen {
 		screenLayout.row();
 		
 		// Anon class for handling header buttons
-		headerHandler = new InputListener() {
+		headerListener = new InputListener() {
 			
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -68,7 +67,7 @@ public abstract class BaseScreen implements Screen {
 			}
 		};
 		
-		headerWidget.addListener(headerHandler);
+		headerWidget.addListener(headerListener);
 	}
 	
 	@Override
