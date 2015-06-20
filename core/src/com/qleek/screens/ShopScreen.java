@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
 import com.qleek.player.Service;
-import com.qleek.utils.WidgetListener;
+import com.qleek.utils.UtilityListener;
 import com.qleek.widgets.ServiceWidget;
 
 public class ShopScreen extends BaseScreen {
@@ -22,7 +22,7 @@ public class ShopScreen extends BaseScreen {
 	private boolean serviceShowing;
 	private TextButton serviceButton, shopButton;
 	private InputListener shopListener;
-	private WidgetListener widgetListener;
+	private UtilityListener widgetListener;
 
 	public ShopScreen(Qleek game) {
 		
@@ -90,7 +90,7 @@ public class ShopScreen extends BaseScreen {
 			}
 		};
 		
-		widgetListener = new WidgetListener() {
+		widgetListener = new UtilityListener() {
 			
 			@Override
 			public void serviceWidgetAction(ServiceWidget widget) {

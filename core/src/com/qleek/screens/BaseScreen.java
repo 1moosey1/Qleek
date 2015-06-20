@@ -1,6 +1,9 @@
 package com.qleek.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -10,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
+import com.qleek.utils.Achievement;
+import com.qleek.utils.UtilityListener;
 import com.qleek.widgets.HeaderWidget;
 
 public abstract class BaseScreen implements Screen {
@@ -21,11 +26,18 @@ public abstract class BaseScreen implements Screen {
 	protected Skin uiSkin = Qleek.skin;
 	protected HeaderWidget headerWidget;
 	
+	protected InputMultiplexer inputMultiplexer;
+	protected ScreenProcessor screenProcessor;
+	
 	private InputListener headerListener;
+	private UtilityListener utilityListener;
 	
 	public BaseScreen(Qleek game) {
 		
 		qleek = game;
+		
+		screenProcessor = new ScreenProcessor();
+		inputMultiplexer = new InputMultiplexer();
 		
 		HUD = new Stage(new ScreenViewport(), qleek.batch);
 		screenLayout = new Table();
@@ -67,12 +79,26 @@ public abstract class BaseScreen implements Screen {
 			}
 		};
 		
+		// Anon class for handling an achievement unlock event
+		// Allows me to display unlock message no matter what screen is displayed
+		utilityListener = new UtilityListener() {
+			
+			@Override
+			public void achievementUnlocked(Achievement achievement) {			
+				System.out.println(achievement.getName() + "\n" + achievement.getDescription());
+			}
+		};
+		
+		inputMultiplexer.addProcessor(HUD);
+		inputMultiplexer.addProcessor(screenProcessor);
+		
 		headerWidget.addListener(headerListener);
+		qleek.achievements.addListener(utilityListener);
 	}
 	
 	@Override
 	public void show() {
-		Gdx.input.setInputProcessor(HUD);
+		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	@Override
@@ -102,8 +128,31 @@ public abstract class BaseScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		
 		HUD.dispose();
-		uiSkin.dispose();
+	}
+	
+	protected class ScreenProcessor implements InputProcessor {
+	
+		@Override
+		public boolean keyDown(int keycode) {
+		
+			if(keycode == Keys.BACK) {
+				
+				if(qleek.getScreen().equals(qleek.gameScreen))
+					Gdx.app.exit();
+			
+				qleek.setScreen(qleek.gameScreen);
+			}
+			
+			return true; 
+		}
+		
+		public boolean touchDown(int screenX, int screenY, int pointer, int button) { return false; }
+		public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false; }
+		public boolean touchDragged(int screenX, int screenY, int pointer) { return true; }
+		public boolean keyUp(int keycode) { return false; }
+		public boolean keyTyped(char character) { return false; }
+		public boolean mouseMoved(int screenX, int screenY) { return false; }
+		public boolean scrolled(int amount) { return false; }
 	}
 }

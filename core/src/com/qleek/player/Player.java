@@ -1,13 +1,17 @@
 package com.qleek.player;
 
-public class Player {
+import com.qleek.utils.Event;
+import com.qleek.utils.Observable;
+
+@SuppressWarnings("unused")
+public class Player extends Observable {
 
 	private int affection, aps, apsDelta, money;
 	private float cumulatedTime;
 	
 	public Player() {
 		
-		money = 5000;
+		money = 5000000;
 	}
 	
 	public void update(float delta) {
@@ -45,11 +49,10 @@ public class Player {
 	public boolean purchaseService(Service service) {
 		
 		int cost = service.getCost();
-		if(money >= cost) {
+		if(money >= cost && service.isUpgradable()) {
 			
 			money -= cost;
-			service.upgrade();
-			addAPS(service.getUpgrade());
+			addAPS(service.upgrade());		
 			return true;
 		}
 		

@@ -1,8 +1,12 @@
 package com.qleek.player;
 
 import com.badlogic.gdx.utils.Array;
+import com.qleek.utils.Event;
+import com.qleek.utils.Observable;
 
-public class Service {
+public class Service extends Observable {
+	
+	public static final int MAXLEVEL = 999;
 	
 	private static Array<Service> serviceList
 		= new Array<Service>();
@@ -11,14 +15,13 @@ public class Service {
 	private String name, description;
 	private int cost, level, aps;
 
-	public Service(String nm, String descrip, SERVICE srv, int lvl) {
+	public Service(String name, String description, SERVICE service, int level) {
 		
-		service = srv;
+		this.service = service;	
+		this.name = name;
+		this.description = description;
+		this.level = level;
 		
-		name = nm;
-		description = descrip;
-		
-		level = lvl;
 		cost = calculateCost();
 		aps = calculateAPS();
 		
@@ -29,27 +32,41 @@ public class Service {
 		
 		String[] text = serviceText.split("\\n");
 		
-		int i = 0;
+		int textIndex = 0;
 		for(SERVICE srv : SERVICE.values())
-			new Service(text[i++], text[i++], srv, 0);
+			new Service(text[textIndex++], text[textIndex++], srv, 0);
 	}
 	
 	public static Array<Service> getServices() { return serviceList; }
 	
-	public String getName()          { return name;            }
-	public String getDescription()   { return description;     }
-	public int    getCost()          { return cost;            }
-	public int    getLevel()         { return level;           }
-	public int    getAPS()           { return aps;             }
-	public int    getUpgrade()       { return service.upgrade; }
+	public String  getName()         { return name;             }
+	public String  getDescription()  { return description;      }
+	public int     getCost()         { return cost;             }
+	public int     getLevel()        { return level;            }
+	public int     getNAPS()         { return aps;              }
+	public boolean isUpgradable()    { return level < MAXLEVEL; }
 	
-	public void upgrade() {
+	public int getCAPS() { 
+		
+		if(level == 0)
+			return 0;
+		
+		return aps - service.upgrade;
+	}	
+	
+	public int upgrade() {
 		
 		level++;
 		cost = calculateCost();
 		aps = calculateAPS();
+		notify(this, Event.SERVICE_UPGRADED);
+		
+		if(level == 1)
+			return service.baseAPS;
+		
+		return service.upgrade;
 	}
-	
+
 	private int calculateCost() {
 		return (int) (service.baseCost * (Math.pow(1.07, level))); }
 	

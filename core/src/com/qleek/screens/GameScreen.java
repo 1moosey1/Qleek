@@ -1,8 +1,6 @@
 package com.qleek.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -15,12 +13,9 @@ public class GameScreen extends BaseScreen {
 	
 	private Table buttonLayout;
 	private TextButton paegantButton, shopButton, inventoryButton, wwyButton;
-	
-	private InputMultiplexer inputMultiplexer;
 	private InputListener menuListener;
-	private InputProcessor screenProcessor;
 	
-	//Test
+	// Test cat image
 	private Texture texture;
 	
 	public GameScreen(Qleek game) {
@@ -40,6 +35,7 @@ public class GameScreen extends BaseScreen {
 	
 	private void create() {
 		
+		headerWidget.disableBack();
 		paegantButton.setName("paegant");
 		shopButton.setName("shop");
 		inventoryButton.setName("inventory");
@@ -71,9 +67,6 @@ public class GameScreen extends BaseScreen {
 		
 		// ----- End screenlayout -----
 		
-		// Handles HUD and background input
-		inputMultiplexer = new InputMultiplexer();
-		
 		// Anon class for handling hud buttons
 		menuListener = new InputListener() {
 			
@@ -101,22 +94,15 @@ public class GameScreen extends BaseScreen {
 			}
 		};
 		
-		screenProcessor = new ScreenProcessor();
-		
-		inputMultiplexer.addProcessor(HUD);
+		//Seperate instance that enables touch responce for this screen
+		inputMultiplexer.removeProcessor(screenProcessor);
+		screenProcessor = new GameProcessor();
 		inputMultiplexer.addProcessor(screenProcessor);
 		
 		paegantButton.addListener(menuListener);
 		shopButton.addListener(menuListener);
 		inventoryButton.addListener(menuListener);
 		wwyButton.addListener(menuListener);
-	}
-	
-	@Override
-	public void show() {
-		
-		Gdx.input.setInputProcessor(inputMultiplexer);
-		headerWidget.disableBack();
 	}
 	
 	@Override
@@ -130,18 +116,13 @@ public class GameScreen extends BaseScreen {
 	}
 	
 	@Override
-	public void hide() {
-		headerWidget.enableBack();
-	}
-	
-	@Override
 	public void dispose() {
 		
 		super.dispose();
 		texture.dispose();
 	}
 	
-	private class ScreenProcessor implements InputProcessor {
+	private class GameProcessor extends ScreenProcessor {
 		
 		private int tdx, tdy, cumulatedDistance;
 		private final int distance = 128;
@@ -197,11 +178,5 @@ public class GameScreen extends BaseScreen {
 			
 			return false;
 		}
-
-		public boolean keyDown(int keycode) { return false; }
-		public boolean keyUp(int keycode) { return false; }
-		public boolean keyTyped(char character) { return false; }
-		public boolean mouseMoved(int screenX, int screenY) { return false; }
-		public boolean scrolled(int amount) { return false; }
 	}
 }

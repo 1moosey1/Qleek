@@ -12,7 +12,7 @@ public class ServiceWidget extends BaseWidget {
 	
 	private Service service;
 	private TextButton upgradeButton;
-	private Label nameLabel, descriptionLabel, levelLabel, apsLabel;
+	private Label nameLabel, descriptionLabel, levelLabel, apsLabel, costLabel;
 	private InputListener serviceListener;
 	
 	public ServiceWidget(Service srv) {
@@ -24,13 +24,18 @@ public class ServiceWidget extends BaseWidget {
 		nameLabel = new Label(service.getName(), uiSkin);
 		levelLabel = new Label ("Lv. " + service.getLevel(), uiSkin);
 		descriptionLabel = new Label(service.getDescription(), uiSkin);
-		apsLabel = new Label(service.getAPS() + " / s", uiSkin);
+		costLabel = new Label("Cost\n$"  + service.getCost(), uiSkin);
+		
+		apsLabel = new Label(
+				"Current: " + service.getCAPS() + " / s \n" +
+				"Next: " + service.getNAPS() + " / s", uiSkin);
 		
 		create();
 	}
 
 	private void create() {
 		
+		nameLabel.setWrap(true);
 		descriptionLabel.setWrap(true);
 		
 		// ----- widgetLayout - 3 x 2 -----
@@ -39,8 +44,8 @@ public class ServiceWidget extends BaseWidget {
 		widgetLayout.defaults().expand().uniform();
 		
 		// Row One
-		widgetLayout.add(nameLabel);
-		widgetLayout.add();
+		widgetLayout.add(nameLabel).fill().colspan(2).center();
+		//widgetLayout.add();
 		widgetLayout.add(levelLabel);
 		widgetLayout.row();
 		
@@ -49,8 +54,8 @@ public class ServiceWidget extends BaseWidget {
 		widgetLayout.row();
 		
 		// Row Three
+		widgetLayout.add(costLabel);
 		widgetLayout.add(apsLabel);
-		widgetLayout.add();
 		widgetLayout.add(upgradeButton).fill()
 			.height(Gdx.graphics.getHeight() * 0.07F);
 		
@@ -75,7 +80,10 @@ public class ServiceWidget extends BaseWidget {
 	public void updateDisplay() {
 		
 		levelLabel.setText("Lv. " + service.getLevel());
-		apsLabel.setText(service.getAPS() + " / s");
+		costLabel.setText("Cost\n$" + service.getCost());
+		apsLabel.setText(
+				"Current: " + service.getCAPS() + " / s \n" +
+				"Next: " + service.getNAPS() + " / s");
 	}
 	
 	public Service getService() {
