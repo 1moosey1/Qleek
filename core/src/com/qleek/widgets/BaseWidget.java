@@ -11,6 +11,10 @@ public abstract class BaseWidget {
 	protected Table widgetLayout;
 	protected UtilityListener widgetListener;
 	
+	public BaseWidget() {
+		widgetLayout = new Table();
+	}
+	
 	public Table getLayout() {
 		return widgetLayout;
 	}
@@ -18,4 +22,6 @@ public abstract class BaseWidget {
 	public void addListener(UtilityListener listener) {
 		widgetListener = listener;
 	}
+	
+	public void updateDisplay() {}
 }

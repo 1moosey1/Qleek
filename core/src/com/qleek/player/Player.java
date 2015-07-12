@@ -1,17 +1,20 @@
 package com.qleek.player;
 
+import com.badlogic.gdx.utils.Array;
 import com.qleek.utils.Event;
 import com.qleek.utils.Observable;
+import com.qleek.utils.Prize;
 
 @SuppressWarnings("unused")
 public class Player extends Observable {
 
 	private int affection, aps, apsDelta, money;
 	private float cumulatedTime;
+	private Array<Item> inventory;
 	
-	public Player() {
+	public Player() {	
 		
-		money = 5000000;
+		inventory = new Array<Item>();
 	}
 	
 	public void update(float delta) {
@@ -34,6 +37,7 @@ public class Player extends Observable {
 		}
 	}
 	
+	public Array<Item> getInventory() { return inventory; }
 	public int getAffection() { return affection; }
 	public int getAPS()       { return aps;       }
 	public int getMoney()     { return money;     }
@@ -42,20 +46,73 @@ public class Player extends Observable {
 		affection += value;
 	}
 	
+	public void resetAffection() {
+		affection = 0;
+	}
+	
 	public void addAPS(int value) {
 		aps += value;
 	}
 	
-	public boolean purchaseService(Service service) {
+	public void addMoney(int value) {
+		money += value;
+	}
+	
+	public boolean canPurchase(int cost) {
 		
-		int cost = service.getCost();
-		if(money >= cost && service.isUpgradable()) {
-			
-			money -= cost;
-			addAPS(service.upgrade());		
+		if(money >= cost)
 			return true;
-		}
 		
 		return false;
+	}
+	
+	public void purchase(int cost) {
+		money = money - cost;
+	}
+	
+	public void addItem(Item.ITEMID itemID) {
+		
+		if(itemID == null)
+			return;
+		
+		for(Item invItem : inventory) {
+			
+			if(invItem.getItemID() == itemID) {
+				
+				invItem.incQuantity();
+				return;
+			}
+		}
+		
+		Item item = new Item(itemID);
+		item.incQuantity();
+		inventory.add(item);
+	}
+	
+	public void subtractItem(Item.ITEMID itemID) {	
+		
+		for(int i = 0; i < inventory.size; i++) {
+			
+			Item item = inventory.get(i);
+			if(item.getItemID() == itemID) {
+				
+				item.decQuantity();
+				if(item.getQuantity() == 0)
+					inventory.removeIndex(i);
+				
+				break;
+			}
+		}
+	}
+	
+	public int howMany(Item.ITEMID itemID) {
+		
+		for(Item item : inventory) {
+			
+			if(item.getItemID() == itemID)
+				return item.getQuantity();
+		}
+		
+		return 0;
 	}
 }

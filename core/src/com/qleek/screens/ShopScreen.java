@@ -9,8 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
+import com.qleek.player.Item;
 import com.qleek.player.Service;
 import com.qleek.utils.UtilityListener;
+import com.qleek.widgets.CostChangable;
+import com.qleek.widgets.ItemWidget;
 import com.qleek.widgets.ServiceWidget;
 
 public class ShopScreen extends BaseScreen {
@@ -23,6 +26,8 @@ public class ShopScreen extends BaseScreen {
 	private TextButton serviceButton, shopButton;
 	private InputListener shopListener;
 	private UtilityListener widgetListener;
+	
+	private Array<CostChangable> changableWidgets;
 
 	public ShopScreen(Qleek game) {
 		
@@ -34,6 +39,8 @@ public class ShopScreen extends BaseScreen {
 		
 		serviceButton = new TextButton("Services", uiSkin);
 		shopButton = new TextButton("Shop", uiSkin);
+		
+		changableWidgets = new Array<CostChangable>();
 		
 		create();
 	}
@@ -51,11 +58,11 @@ public class ShopScreen extends BaseScreen {
 		shopLayout.defaults().expand().fill();
 		
 		// Row One
-		shopLayout.add(serviceButton);
-		shopLayout.add(shopButton);	
+		shopLayout.add(serviceButton).uniformX();
+		shopLayout.add(shopButton).uniformX();	
 		shopLayout.row();
 			
-		//Row Two
+		// Row Two
 		shopLayout.add(scrollPane).colspan(2)
 			.width(Gdx.graphics.getWidth() * 0.9F)
 			.height(Gdx.graphics.getHeight() * 0.725F);
@@ -64,7 +71,7 @@ public class ShopScreen extends BaseScreen {
 		
 		// ----- screenLayout 2 x 1 -----
 		
-		//Row Two
+		// Row Two
 		screenLayout.add(shopLayout).fill()
 			.height(Gdx.graphics.getHeight() * 0.8F);
 		
@@ -96,10 +103,25 @@ public class ShopScreen extends BaseScreen {
 			public void serviceWidgetAction(ServiceWidget widget) {
 				
 				Service service = widget.getService();
-				boolean purchased = qleek.player.purchaseService(service);
+				if(qleek.player.canPurchase(service.getCost()) &&
+						service.isUpgradable()) {
 				
-				if(purchased)
+					qleek.player.purchase(service.getCost());
+					qleek.player.addAPS(service.upgrade());
 					widget.updateDisplay();
+				}
+			}
+			
+			@Override
+			public void itemWidgetAction(ItemWidget widget) {
+				
+				Item item = widget.getItem();
+				if(qleek.player.canPurchase(item.getCost())) {
+					
+					qleek.player.purchase(item.getCost());
+					qleek.player.addItem(item.getItemID());
+					widget.updateDisplay();
+				}
 			}
 		};
 		
@@ -109,15 +131,17 @@ public class ShopScreen extends BaseScreen {
 	
 	private void populateService() {
 		
-		Array<Service> serviceList = Service.getServices();
 		if(!verticalGroup.hasChildren() || !serviceShowing) {
 			
+			changableWidgets.clear();
 			verticalGroup.clearChildren();
-			for(Service service : serviceList) {
+			
+			for(Service service : Service.getServices()) {
 				
 				ServiceWidget widget = new ServiceWidget(service);
 				widget.addListener(widgetListener);
 				
+				changableWidgets.add(widget);
 				verticalGroup.addActor(widget.getLayout());
 			}
 			
@@ -126,7 +150,27 @@ public class ShopScreen extends BaseScreen {
 	}
 	
 	private void populateShop() {
-		// To do
+				
+		if(serviceShowing) {
+			
+			changableWidgets.clear();
+			verticalGroup.clearChildren();
+
+			for(Item.ITEMID itemID : Item.shopItems) {
+		
+				Item item = new Item(
+						itemID, qleek.player.getAffection(), qleek.player.getMoney());
+				item.setQuantity(qleek.player.howMany(itemID));
+				
+				ItemWidget widget = new ItemWidget(item);
+				widget.addListener(widgetListener);
+
+				changableWidgets.add(widget);
+				verticalGroup.addActor(widget.getLayout());
+			}
+			
+			serviceShowing = false;
+		}
 	}
 	
 	@Override
@@ -134,5 +178,14 @@ public class ShopScreen extends BaseScreen {
 		
 		super.show();
 		populateService();
+	}
+	
+	@Override
+	public void render(float delta) {
+		
+		super.render(delta);
+			
+		for(CostChangable widget : changableWidgets)
+			widget.updateCostProperty(qleek.player.getMoney());
 	}
 }

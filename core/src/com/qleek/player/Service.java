@@ -31,14 +31,14 @@ public class Service extends Observable {
 	public static void initServices(String serviceText) {
 		
 		String[] text = serviceText.split("\\n");
+		serviceList.clear();
 		
 		int textIndex = 0;
 		for(SERVICE srv : SERVICE.values())
 			new Service(text[textIndex++], text[textIndex++], srv, 0);
 	}
 	
-	public static Array<Service> getServices() { return serviceList; }
-	
+	public static Array<Service> getServices() { return serviceList; }	
 	public String  getName()         { return name;             }
 	public String  getDescription()  { return description;      }
 	public int     getCost()         { return cost;             }
@@ -68,7 +68,7 @@ public class Service extends Observable {
 	}
 
 	private int calculateCost() {
-		return (int) (service.baseCost * (Math.pow(1.07, level))); }
+		return (int) (service.baseCost * (Math.pow(1.075, level))); }
 	
 	private int calculateAPS() {
 		return service.baseAPS + (service.upgrade * level); }

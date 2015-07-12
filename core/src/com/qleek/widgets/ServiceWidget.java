@@ -4,22 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Service;
 
-public class ServiceWidget extends BaseWidget {
+public class ServiceWidget extends BaseWidget implements CostChangable {
 	
 	private Service service;
 	private TextButton upgradeButton;
 	private Label nameLabel, descriptionLabel, levelLabel, apsLabel, costLabel;
-	private InputListener serviceListener;
 	
-	public ServiceWidget(Service srv) {
+	public ServiceWidget(Service service) {
 		
-		service = srv;
+		this.service = service;
 		
-		widgetLayout = new Table();
 		upgradeButton = new TextButton("Upgrade", uiSkin);
 		nameLabel = new Label(service.getName(), uiSkin);
 		levelLabel = new Label ("Lv. " + service.getLevel(), uiSkin);
@@ -38,14 +35,13 @@ public class ServiceWidget extends BaseWidget {
 		nameLabel.setWrap(true);
 		descriptionLabel.setWrap(true);
 		
-		// ----- widgetLayout - 3 x 2 -----
+		// ----- widgetLayout - 3 x 3 -----
 		
 		widgetLayout.setDebug(true);
 		widgetLayout.defaults().expand().uniform();
 		
 		// Row One
 		widgetLayout.add(nameLabel).fill().colspan(2).center();
-		//widgetLayout.add();
 		widgetLayout.add(levelLabel);
 		widgetLayout.row();
 		
@@ -61,7 +57,7 @@ public class ServiceWidget extends BaseWidget {
 		
 		// ----- End widgetLayout -----
 		
-		serviceListener = new InputListener() {
+		InputListener serviceListener = new InputListener() {
 			
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -77,6 +73,7 @@ public class ServiceWidget extends BaseWidget {
 		upgradeButton.addListener(serviceListener);
 	}
 
+	@Override
 	public void updateDisplay() {
 		
 		levelLabel.setText("Lv. " + service.getLevel());
@@ -88,5 +85,14 @@ public class ServiceWidget extends BaseWidget {
 	
 	public Service getService() {
 		return service;
+	}
+	
+	@Override
+	public void updateCostProperty(int playerMoney) {
+		
+		if(service.getCost() > playerMoney)
+			upgradeButton.setDisabled(true);
+		else
+			upgradeButton.setDisabled(false);
 	}
 }

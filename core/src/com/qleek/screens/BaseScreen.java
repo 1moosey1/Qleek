@@ -14,8 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
 import com.qleek.utils.Achievement;
-import com.qleek.utils.UtilityListener;
 import com.qleek.widgets.HeaderWidget;
+import com.qleek.widgets.QleekDialog;
 
 public abstract class BaseScreen implements Screen {
 	
@@ -25,12 +25,9 @@ public abstract class BaseScreen implements Screen {
 	
 	protected Skin uiSkin = Qleek.skin;
 	protected HeaderWidget headerWidget;
-	
 	protected InputMultiplexer inputMultiplexer;
 	protected ScreenProcessor screenProcessor;
-	
 	private InputListener headerListener;
-	private UtilityListener utilityListener;
 	
 	public BaseScreen(Qleek game) {
 		
@@ -42,7 +39,7 @@ public abstract class BaseScreen implements Screen {
 		HUD = new Stage(new ScreenViewport(), qleek.batch);
 		screenLayout = new Table();
 		headerWidget = new HeaderWidget();
-
+		
 		create();
 	}
 	
@@ -79,21 +76,16 @@ public abstract class BaseScreen implements Screen {
 			}
 		};
 		
-		// Anon class for handling an achievement unlock event
-		// Allows me to display unlock message no matter what screen is displayed
-		utilityListener = new UtilityListener() {
-			
-			@Override
-			public void achievementUnlocked(Achievement achievement) {			
-				System.out.println(achievement.getName() + "\n" + achievement.getDescription());
-			}
-		};
+		headerWidget.addListener(headerListener);
 		
 		inputMultiplexer.addProcessor(HUD);
 		inputMultiplexer.addProcessor(screenProcessor);
-		
-		headerWidget.addListener(headerListener);
-		qleek.achievements.addListener(utilityListener);
+	}
+	
+	public void displayOptions() {}
+	
+	public void displayAchievement(Achievement achievement) {
+		new QleekDialog(achievement).show(HUD);
 	}
 	
 	@Override

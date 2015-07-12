@@ -1,6 +1,7 @@
 package com.qleek.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -94,25 +95,32 @@ public class GameScreen extends BaseScreen {
 			}
 		};
 		
-		//Seperate instance that enables touch responce for this screen
-		inputMultiplexer.removeProcessor(screenProcessor);
-		screenProcessor = new GameProcessor();
-		inputMultiplexer.addProcessor(screenProcessor);
-		
 		paegantButton.addListener(menuListener);
 		shopButton.addListener(menuListener);
 		inventoryButton.addListener(menuListener);
 		wwyButton.addListener(menuListener);
+		
+		//Seperate instance that enables touch responce for this screen
+		inputMultiplexer.removeProcessor(screenProcessor);
+		screenProcessor = new GameProcessor();
+		inputMultiplexer.addProcessor(screenProcessor);
 	}
 	
 	@Override
 	public void render(float delta) {
 		
-		super.render(delta);
+		qleek.player.update(delta);
+		headerWidget.updateDisplay(qleek.player);
+		
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		qleek.batch.begin();
 		qleek.batch.draw(texture, 142, 416);
 		qleek.batch.end();
+		
+		HUD.act(delta);
+		HUD.draw();
 	}
 	
 	@Override
