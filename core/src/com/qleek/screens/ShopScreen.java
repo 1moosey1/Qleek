@@ -53,7 +53,6 @@ public class ShopScreen extends BaseScreen {
 		verticalGroup.fill();
 		
 		// ----- shopLayout 2 x 2 -----
-		
 		shopLayout.setDebug(true);
 		shopLayout.defaults().expand().fill();
 		

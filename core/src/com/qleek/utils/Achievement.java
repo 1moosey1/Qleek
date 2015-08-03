@@ -18,7 +18,6 @@ public enum Achievement {
 		("Achievement 4",
 		"Upgrade a service to level 999.");
 	
-	//private int id;
 	private final String name, description;
 	private boolean unlocked;
 	

@@ -6,7 +6,10 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.qleek.player.Item;
+import com.qleek.player.Item.ITEMID;
 import com.qleek.player.Paegant;
 import com.qleek.player.Player;
 import com.qleek.player.Service;
@@ -14,13 +17,16 @@ import com.qleek.screens.*;
 import com.qleek.utils.Achievement;
 import com.qleek.utils.Achievements;
 import com.qleek.utils.Observable;
+import com.qleek.utils.SaveManager;
+import com.qleek.utils.SoundManager;
 import com.qleek.utils.UtilityListener;
 
 public class Qleek extends Game {
 	
-	public static Skin skin;
-	public SpriteBatch batch;
+	public  static Skin skin;
+	private static int IDLECAP = 3600;
 	
+	public SpriteBatch batch;
 	public Player player;
 	public Achievements achievements;
 	public UtilityListener achievementListener;
@@ -28,6 +34,8 @@ public class Qleek extends Game {
 	public TextureAtlas itemAtlas;
 	public BaseScreen gameScreen, paegantScreen, shopScreen,
 		inventoryScreen, wwyScreen;
+	
+	public long timeStamp;
 	
 	@Override
 	public void create () {
@@ -39,13 +47,17 @@ public class Qleek extends Game {
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		
+		// File handling - loading section
 		FileHandle fileHandle;
 		
-		// Load all game images
+		// Load game images
 		// Item images
 		fileHandle = Gdx.files.internal("Items/ItemPack.pack");
 		itemAtlas = new TextureAtlas(fileHandle);
 		Item.setAtlas(itemAtlas);
+		
+		// Initialize player
+		player = new Player();
 		
 		// Initialize screens 
 		gameScreen = new GameScreen(this);
@@ -54,8 +66,10 @@ public class Qleek extends Game {
 		inventoryScreen = new InventoryScreen(this);
 		wwyScreen = new WWYScreen(this);
 		
-		// Initialize player and achievement functionality
-		player = new Player();
+		// Initialize sound functionality
+		Observable.addObserver(SoundManager.getInstance());
+		
+		// Initialize achievement functionality
 		achievements = Achievements.getInstance();
 		achievementListener = new UtilityListener() {
 			
@@ -80,8 +94,85 @@ public class Qleek extends Game {
 		fileHandle = Gdx.files.internal("paegant.meow");
 		Paegant.initPaegants(fileHandle.readString());
 		
+		// Load game save data
+		SaveManager saveManager = SaveManager.getInstance();
+		saveManager.readSave();
+		
+		if(saveManager.hasSaveData()) {
+			
+			String[] saveData;
+			
+			// Reward idle time
+			timeStamp = Long.parseLong(saveManager.getTimeData());
+			handleIdleTime();
+			
+			// Load saved player data
+			saveData = saveManager.getPlayerData();
+			player.setAffection(Integer.parseInt(saveData[0]));
+			player.setAPS(Integer.parseInt(saveData[1]));
+			player.setMoney(Integer.parseInt(saveData[2]));
+			
+			// Load saved inventory data
+			String[] itemData;
+			Array<Item> itemList = player.getInventory();
+			
+			saveData = saveManager.getInventoryData();
+			for(int i = 1; i < saveData.length; i++) {
+				
+				itemData = saveData[i].split(":");
+				Item item = new Item(ITEMID.valueOf(itemData[0]));
+				item.setQuantity(Integer.parseInt(itemData[1]));
+				item.setAPS(Integer.parseInt(itemData[2]));
+				itemList.add(item);
+			}
+			
+			// Load saved equip data
+			itemList = player.getEquips();
+			saveData = saveManager.getEquipData();
+			for(int i = 0; i < saveData.length; i++) {
+				
+				itemData = saveData[i].split(":");
+				if(!itemData[0].equals("0")) {
+					
+					Item item = new Item(ITEMID.valueOf(itemData[0]));
+					item.setAPS(Integer.parseInt(itemData[1]));
+					itemList.set(i, item);
+				}
+			}
+			
+			// Load saved achievement data
+			Achievement[] achieveList = Achievement.values();
+			saveData = saveManager.getAchievementData();
+			for(int i = 0; i < saveData.length; i++) {
+			
+				boolean bValue = Boolean.parseBoolean(saveData[i]);
+				if(bValue)
+					achieveList[i].unlock();
+			}
+			
+			// Load saved service data
+			Array<Service> serviceList = Service.getServices();
+			saveData = saveManager.getServiceData();
+			for(int i = 0; i < saveData.length; i++)
+				serviceList.get(i).setLevel(Integer.parseInt(saveData[i]));
+		}	
+		
 		// Start game
 		setScreen(gameScreen);
+	}
+	
+	public void handleIdleTime() {
+		
+		long idleTime = TimeUtils.timeSinceMillis(timeStamp);
+		idleTime /= 1000;
+		
+		int affection;
+		if(idleTime > IDLECAP)
+			affection = player.getAPS() * IDLECAP;
+		else
+			affection = (int) (player.getAPS() * idleTime);
+		
+		player.addAffection(affection);
 	}
 	
 	@Override
@@ -97,5 +188,7 @@ public class Qleek extends Game {
 		shopScreen.dispose();
 		inventoryScreen.dispose();
 		wwyScreen.dispose();
+		
+		SaveManager.getInstance().writeSave(this);
 	}
 }

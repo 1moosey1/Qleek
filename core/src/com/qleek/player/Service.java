@@ -15,15 +15,14 @@ public class Service extends Observable {
 	private String name, description;
 	private int cost, level, aps;
 
-	public Service(String name, String description, SERVICE service, int level) {
+	public Service(String name, String description, SERVICE service) {
 		
 		this.service = service;	
 		this.name = name;
 		this.description = description;
-		this.level = level;
 		
-		cost = calculateCost();
-		aps = calculateAPS();
+		calculateCost();
+		calculateAPS();
 		
 		serviceList.add(this);
 	}
@@ -35,7 +34,7 @@ public class Service extends Observable {
 		
 		int textIndex = 0;
 		for(SERVICE srv : SERVICE.values())
-			new Service(text[textIndex++], text[textIndex++], srv, 0);
+			new Service(text[textIndex++], text[textIndex++], srv);
 	}
 	
 	public static Array<Service> getServices() { return serviceList; }	
@@ -57,8 +56,8 @@ public class Service extends Observable {
 	public int upgrade() {
 		
 		level++;
-		cost = calculateCost();
-		aps = calculateAPS();
+		calculateCost();
+		calculateAPS();
 		notify(this, Event.SERVICE_UPGRADED);
 		
 		if(level == 1)
@@ -66,12 +65,21 @@ public class Service extends Observable {
 		
 		return service.upgrade;
 	}
-
-	private int calculateCost() {
-		return (int) (service.baseCost * (Math.pow(1.075, level))); }
 	
-	private int calculateAPS() {
-		return service.baseAPS + (service.upgrade * level); }
+	public void setLevel(int level) {
+		
+		this.level = level;
+		calculateCost();
+		calculateAPS();
+	}
+
+	private void calculateCost() {
+		cost = ((int) (service.baseCost * (Math.pow(1.05, level)))); 
+	}
+	
+	private void calculateAPS() {
+		aps = (service.baseAPS + (service.upgrade * level)); 
+	}
 
 	private enum SERVICE {
 		

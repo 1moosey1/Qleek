@@ -7,14 +7,14 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 public class Item {
 	
-	public static Array<ITEMID> shopItems = new Array<ITEMID>();
+	public  static Array<ITEMID> shopItems = new Array<ITEMID>();
 	private static TextureAtlas itemAtlas;
 	private static ObjectMap<ITEMID, String[]> info = new ObjectMap<ITEMID, String[]>();
 	
 	private ITEMID itemID;
 	private String name, description;
-	private int quantity, cost;
-	private boolean useable;
+	private int quantity, cost, aps;
+	private boolean useable, special;
 
 	public Item(ITEMID id) {
 		
@@ -23,6 +23,7 @@ public class Item {
 		
 		name = text[0];
 		description = text[1];	
+		aps = id.aps;
 	}
 	
 	public Item(ITEMID id, int affection, int money) {
@@ -57,13 +58,18 @@ public class Item {
 	public String  getName()         { return name;             }
 	public String  getDescription()  { return description;      }
 	public boolean isUsable()        { return useable;          }
+	public boolean isSpecial()       { return special;          }
 	public int     getQuantity()     { return quantity;         }
 	public int     getCost()         { return cost;             }
-	public int     getAPS()          { return itemID.aps;       }
+	public int     getAPS()          { return aps;              }
 	public TextureRegion getRegion() { return itemAtlas.findRegion(itemID.name()); }
 	
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+	
+	public void setAPS(int aps) {
+		this.aps = aps;
 	}
 	
 	public void incQuantity() {
@@ -85,7 +91,7 @@ public class Item {
 		// Third place ribbon
 		ITEM3(0, 1);
 		
-		final int baseCost, aps;
+		private final int baseCost, aps;
 		ITEMID(int baseCost, int aps) {
 			
 			this.baseCost = baseCost;

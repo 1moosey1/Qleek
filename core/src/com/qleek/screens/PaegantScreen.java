@@ -101,7 +101,7 @@ public class PaegantScreen extends BaseScreen {
 				
 				qleek.player.addMoney(prize.getMoney());
 				qleek.player.addItem(prize.getItem());
-				qleek.player.resetAffection();
+				qleek.player.setAffection(0);
 				new QleekDialog(prize).show(HUD);
 			}
 		};

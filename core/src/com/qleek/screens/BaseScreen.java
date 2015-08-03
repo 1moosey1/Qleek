@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
 import com.qleek.utils.Achievement;
@@ -110,10 +111,14 @@ public abstract class BaseScreen implements Screen {
 	public void resize(int width, int height) {}
 
 	@Override
-	public void pause() {}
+	public void pause() {
+		qleek.timeStamp = TimeUtils.millis();
+	}
 
 	@Override
-	public void resume() {}
+	public void resume() {
+		qleek.handleIdleTime();
+	}
 	
 	@Override
 	public void hide() {}

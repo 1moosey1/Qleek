@@ -4,10 +4,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public class TableUtils {
 
-	//Can not instantiate 
+	// Can not instantiate 
 	private TableUtils() {}
 	
-	//Adds x blank cells to your current row
+	// Adds x blank cells to your current row
 	public static void addBlankCells(Table table, int cells) {
 		
 		for(int i = 0; i < cells; i++)

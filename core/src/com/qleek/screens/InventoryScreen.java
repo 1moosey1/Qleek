@@ -8,16 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
 import com.qleek.player.Item;
-import com.qleek.player.Item.ITEMID;
 import com.qleek.utils.Achievement;
 import com.qleek.utils.CraftManager;
 import com.qleek.utils.Recipe;
 import com.qleek.utils.UtilityListener;
-import com.qleek.widgets.CraftWidget;
 import com.qleek.widgets.QleekDialog;
 import com.qleek.widgets.SquareWidget;
+import com.qleek.widgets.StatusWidget;
 import com.qleek.widgets.TableGroup;
 
 public class InventoryScreen extends BaseScreen {
@@ -31,12 +31,7 @@ public class InventoryScreen extends BaseScreen {
 	private TextButton inventoryButton, achievementButton;
 	private InputListener inventoryListener;
 	private UtilityListener dialogListener;
-	
-	// Three craft widgets
-	private CraftWidget craftWidget1, craftWidget2, craftWidget3;
-	
-	// Four equip widgets
-	// to do
+	private StatusWidget[] statusWidgets;
 	
 	public InventoryScreen(Qleek game) {
 		
@@ -56,9 +51,9 @@ public class InventoryScreen extends BaseScreen {
 		inventoryButton = new TextButton("Inventory", uiSkin);
 		achievementButton = new TextButton("Achievements", uiSkin);
 		
-		craftWidget1 = new CraftWidget();
-		craftWidget2 = new CraftWidget();
-		craftWidget3 = new CraftWidget();
+		statusWidgets = new StatusWidget[7];
+		for(int i = 0; i < statusWidgets.length; i++)
+			statusWidgets[i] = new StatusWidget();
 		
 		create();
 	}
@@ -67,26 +62,30 @@ public class InventoryScreen extends BaseScreen {
 		
 		inventoryButton.setName("inventory");
 		achievementButton.setName("achievements");
-		craftWidget1.getLayout().setName("craftwidget1");
-		craftWidget2.getLayout().setName("craftwidget2");
-		craftWidget3.getLayout().setName("craftwidget3");
-		
-		inventoryGroup.fill();
-		
+		statusWidgets[3].setName("equip");
+		statusWidgets[4].setName("equip");
+		statusWidgets[5].setName("equip");
+		statusWidgets[6].setName("equip");
+				
 		// ----- craftLayout 1 x 3 -----
 		
-		craftLayout.setDebug(true);
-		
 		// Row One
-		craftLayout.add(craftWidget1.getLayout());
-		craftLayout.add(craftWidget2.getLayout());
-		craftLayout.add(craftWidget3.getLayout());
+		craftLayout.add(statusWidgets[0].getLayout());
+		craftLayout.add(statusWidgets[1].getLayout());
+		craftLayout.add(statusWidgets[2].getLayout());
 
 		// ----- End craftLayout -----
 		
-		// ----- inventoryLayout 2 x 2 -----
+		// ----- vanityGroup -----
+		for(int i = 3; i < statusWidgets.length; i++) {
+			
+			statusWidgets[i].setIndex(i-3);
+			vanityGroup.addActor(statusWidgets[i].getLayout());
+		}
 		
-		inventoryLayout.setDebug(true);
+		// ----- End vanityGroup -----
+		
+		// ----- inventoryLayout 2 x 2 -----
 		inventoryLayout.defaults().expand().fill();
 		
 		// Row One
@@ -130,12 +129,12 @@ public class InventoryScreen extends BaseScreen {
 		
 		dialogListener = new UtilityListener() {
 			
-			private ITEMID itemID;
+			private Item item;
 			
 			@Override
 			public void squareWidgetAction(Item item) {
 				
-				itemID = item.getItemID();
+				this.item = item;
 				QleekDialog dialog = new QleekDialog(item);
 				dialog.addListener(dialogListener);
 				dialog.show(HUD);
@@ -148,56 +147,106 @@ public class InventoryScreen extends BaseScreen {
 			
 			@Override
 			public void equipItemAction() {
+
+				boolean equipped = false;
 				
-			}
-			
-			@Override
-			public void craftItemAction() {
-				
-				qleek.player.subtractItem(itemID);
-				reloadInventory();
-				
-				if(!craftWidget1.isReady())
-					craftWidget1.setItem(itemID);
-				
-				else if(!craftWidget2.isReady())
-					craftWidget2.setItem(itemID);
-				
-				else {
+				if(!statusWidgets[3].isReady()) {
 					
-					craftWidget3.setItem(itemID);
+					equipped = true;
+					statusWidgets[3].setItem(item);
+					qleek.player.getEquips().set(0, item);	
+				} 
+				else if(!statusWidgets[4].isReady()) {
 					
-					Recipe recipe = new Recipe(
-							craftWidget1.getItemID(),
-							craftWidget2.getItemID(),
-							craftWidget3.getItemID());
+					equipped = true;
+					statusWidgets[4].setItem(item);
+					qleek.player.getEquips().set(1, item);	
+				} 
+				else if(!statusWidgets[5].isReady()) {
 					
-					ITEMID creation =
-							CraftManager.getInstance().craft(recipe);	
-					qleek.player.addItem(creation);
+					equipped = true;
+					statusWidgets[5].setItem(item);
+					qleek.player.getEquips().set(2, item);
+				} 
+				else if(!statusWidgets[6].isReady()) {
 					
-					craftWidget1.reset();
-					craftWidget2.reset();
-					craftWidget3.reset();
+					equipped = true;
+					statusWidgets[6].setItem(item);
+					qleek.player.getEquips().set(3, item);
+				}
+				
+				if(equipped) {
+					
+					qleek.player.removeItem(item.getItemID());
 					reloadInventory();
 				}
 			}
 			
 			@Override
-			public void craftWidgetAction(CraftWidget widget) {
+			public void craftItemAction() {
 				
-				qleek.player.addItem(widget.getItemID());
+				qleek.player.removeItem(item.getItemID());
+				
+				if(!statusWidgets[0].isReady())
+					statusWidgets[0].setItem(item);
+				
+				else if(!statusWidgets[1].isReady())
+					statusWidgets[1].setItem(item);
+				
+				else {
+					
+					statusWidgets[2].setItem(item);
+					craft();
+				}
+				
+				reloadInventory();
+			}
+			
+			@Override
+			public void statusWidgetAction(StatusWidget widget) {
+				
+				if(widget.getItem().isSpecial())
+					qleek.player.addItem(widget.getItem());
+				else
+					qleek.player.addItem(widget.getItemID());
+				
+				if(widget.getName() == "equip")
+					qleek.player.unequip(widget.getIndex());
+				
 				widget.reset();
-				
 				reloadInventory();
 			}
 		};
 		
 		inventoryButton.addListener(inventoryListener);
 		achievementButton.addListener(inventoryListener);
-		craftWidget1.addListener(dialogListener);
-		craftWidget2.addListener(dialogListener);
-		craftWidget3.addListener(dialogListener);
+		for(int i = 0; i < statusWidgets.length; i++)
+			statusWidgets[i].addListener(dialogListener);
+	}
+	
+	private void craft() {
+		
+		Item item1, item2, item3;
+		item1 = statusWidgets[0].getItem();
+		item2 = statusWidgets[1].getItem();
+		item3 = statusWidgets[2].getItem();
+		
+		if(item1.isSpecial() || item2.isSpecial() || item3.isSpecial()) {
+			//TO DO
+		}
+		else {
+			
+			Recipe recipe = new Recipe(
+					statusWidgets[0].getItemID(),
+					statusWidgets[1].getItemID(),
+					statusWidgets[2].getItemID());
+			
+			qleek.player.addItem(CraftManager.getInstance().craft(recipe));
+		}
+		
+		statusWidgets[0].reset();
+		statusWidgets[1].reset();
+		statusWidgets[2].reset();
 	}
 	
 	private void populateInventory() {
@@ -205,9 +254,7 @@ public class InventoryScreen extends BaseScreen {
 		if(!inventoryShowing) {
 			
 			// Construct/Reconstruct table
-			// ----- innerLayout 2 x 2 -----
-		
-			innerLayout.setDebug(true);
+			// ----- innerLayout 2 x 2 -----	
 			innerLayout.clear();
 		
 			// Row One
@@ -228,11 +275,10 @@ public class InventoryScreen extends BaseScreen {
 				widget.addListener(dialogListener);
 				inventoryGroup.addToGroup(widget.getLayout());
 			}
-		
-			vanityGroup.clear();
-			vanityGroup.addActor(new Image(qleek.itemAtlas.findRegion("base")));
-			vanityGroup.addActor(new Image(qleek.itemAtlas.findRegion("base")));
-			vanityGroup.addActor(new Image(qleek.itemAtlas.findRegion("base")));
+			
+			Array<Item> equips = qleek.player.getEquips();
+			for(int i = 3; i < statusWidgets.length; i++)
+				statusWidgets[i].setItem(equips.get(i-3));
 			
 			inventoryShowing = true;
 		}
@@ -243,9 +289,7 @@ public class InventoryScreen extends BaseScreen {
 		if(inventoryShowing) {
 			
 			// Construct/Reconstruct Table
-			// ----- innerLayout 1 x 1 -----
-			
-			innerLayout.setDebug(true);
+			// ----- innerLayout 1 x 1 -----	
 			innerLayout.clear();
 		
 			// Row One
@@ -263,8 +307,13 @@ public class InventoryScreen extends BaseScreen {
 	
 	private void reloadInventory() {
 		
-		inventoryShowing = false;
-		populateInventory();
+		inventoryGroup.clearGroup();
+		for(Item item : qleek.player.getInventory()) {
+			
+			SquareWidget widget = new SquareWidget(item);
+			widget.addListener(dialogListener);
+			inventoryGroup.addToGroup(widget.getLayout());
+		}
 	}
 	
 	@Override

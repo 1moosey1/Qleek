@@ -1,20 +1,23 @@
 package com.qleek.player;
 
 import com.badlogic.gdx.utils.Array;
-import com.qleek.utils.Event;
+import com.qleek.player.Item.ITEMID;
 import com.qleek.utils.Observable;
-import com.qleek.utils.Prize;
 
-@SuppressWarnings("unused")
 public class Player extends Observable {
 
 	private int affection, aps, apsDelta, money;
 	private float cumulatedTime;
-	private Array<Item> inventory;
+	private Array<Item> inventory, equips;
 	
 	public Player() {	
 		
 		inventory = new Array<Item>();
+		equips = new Array<Item>();
+		equips.add(null);
+		equips.add(null);
+		equips.add(null);
+		equips.add(null);
 	}
 	
 	public void update(float delta) {
@@ -38,16 +41,25 @@ public class Player extends Observable {
 	}
 	
 	public Array<Item> getInventory() { return inventory; }
+	public Array<Item> getEquips()    { return equips;    }
 	public int getAffection() { return affection; }
 	public int getAPS()       { return aps;       }
 	public int getMoney()     { return money;     }
 	
-	public void addAffection(int value) {
-		affection += value;
+	public void setAffection(int affection) { 
+		this.affection = affection; 
 	}
 	
-	public void resetAffection() {
-		affection = 0;
+	public void setAPS(int aps) {
+		this.aps = aps; 
+	}
+	
+	public void setMoney(int money) {
+		this.money = money; 
+	}
+	
+	public void addAffection(int value) {
+		affection += value;
 	}
 	
 	public void addAPS(int value) {
@@ -70,7 +82,13 @@ public class Player extends Observable {
 		money = money - cost;
 	}
 	
-	public void addItem(Item.ITEMID itemID) {
+	public void addItem(Item item) {
+		
+		addAPS(item.getAPS());
+		inventory.add(item);
+	}
+	
+	public void addItem(ITEMID itemID) {
 		
 		if(itemID == null)
 			return;
@@ -80,16 +98,18 @@ public class Player extends Observable {
 			if(invItem.getItemID() == itemID) {
 				
 				invItem.incQuantity();
+				addAPS(invItem.getAPS());
 				return;
 			}
 		}
 		
 		Item item = new Item(itemID);
 		item.incQuantity();
+		addAPS(item.getAPS());
 		inventory.add(item);
 	}
 	
-	public void subtractItem(Item.ITEMID itemID) {	
+	public void removeItem(ITEMID itemID) {	
 		
 		for(int i = 0; i < inventory.size; i++) {
 			
@@ -97,6 +117,7 @@ public class Player extends Observable {
 			if(item.getItemID() == itemID) {
 				
 				item.decQuantity();
+				addAPS(-item.getAPS());
 				if(item.getQuantity() == 0)
 					inventory.removeIndex(i);
 				
@@ -105,7 +126,11 @@ public class Player extends Observable {
 		}
 	}
 	
-	public int howMany(Item.ITEMID itemID) {
+	public void unequip(int index) {
+		equips.set(index, null);
+	}
+	
+	public int howMany(ITEMID itemID) {
 		
 		for(Item item : inventory) {
 			

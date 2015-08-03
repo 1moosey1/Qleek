@@ -9,13 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.qleek.player.Item;
 import com.qleek.player.Item.ITEMID;
 
-public class CraftWidget extends BaseWidget {
+public class StatusWidget extends BaseWidget {
 
-	private ITEMID itemID;
+	private Item item;
 	private TextureRegion baseTexture;
+	private int index;
 	private boolean ready;
 	
-	public CraftWidget() {
+	public StatusWidget() {
 		
 		baseTexture = Item.getBase();
 		widgetLayout.setBackground(new SpriteDrawable(new Sprite(baseTexture)));
@@ -30,21 +31,35 @@ public class CraftWidget extends BaseWidget {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				
-				if(CraftWidget.this.isReady())
-					widgetListener.craftWidgetAction(CraftWidget.this);
+				if(StatusWidget.this.isReady())
+					widgetListener.statusWidgetAction(StatusWidget.this);
 			}	
 		});
 	}
 	
-	public void setItem(ITEMID id) {
+	public void setItem(Item item) {
+		
+		if(item == null)
+			return;
 	
-		itemID = id;
+		this.item = item;
 		ready = true;
-		widgetLayout.setBackground(new SpriteDrawable(new Sprite(Item.getRegion(id))));
+		widgetLayout.setBackground(new SpriteDrawable(new Sprite(Item.getRegion(item.getItemID()))));
 	}
 	
-	public ITEMID getItemID() { return itemID; }
-	public boolean isReady()  { return ready;  }
+	public void setName(String name) {
+		widgetLayout.setName(name);
+	}
+	
+	public void setIndex(int value) {
+		index = value;
+	}
+	
+	public String getName()   { return widgetLayout.getName(); }
+	public Item getItem()     { return item;                   }
+	public ITEMID getItemID() { return item.getItemID();       }
+	public int getIndex()     { return index;                  }
+	public boolean isReady()  { return ready;                  }
 	public void reset() {
 		
 		ready = false;
