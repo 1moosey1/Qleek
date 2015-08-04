@@ -3,6 +3,7 @@ package com.qleek.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -15,7 +16,7 @@ import com.qleek.utils.Achievement;
 import com.qleek.utils.CraftManager;
 import com.qleek.utils.Recipe;
 import com.qleek.utils.UtilityListener;
-import com.qleek.widgets.QleekDialog;
+import com.qleek.widgets.ExitDialog;
 import com.qleek.widgets.SquareWidget;
 import com.qleek.widgets.StatusWidget;
 import com.qleek.widgets.TableGroup;
@@ -26,9 +27,11 @@ public class InventoryScreen extends BaseScreen {
 	private ScrollPane inventoryPane, achievementPane;
 	private TableGroup inventoryGroup, achievementGroup;
 	private VerticalGroup vanityGroup;
+	private Dialog exitDialog;
 	
 	private boolean inventoryShowing;
-	private TextButton inventoryButton, achievementButton;
+	private TextButton inventoryButton, achievementButton, useButton, 
+		equipButton, craftButton;
 	private InputListener inventoryListener;
 	private UtilityListener dialogListener;
 	private StatusWidget[] statusWidgets;
@@ -50,6 +53,9 @@ public class InventoryScreen extends BaseScreen {
 		
 		inventoryButton = new TextButton("Inventory", uiSkin);
 		achievementButton = new TextButton("Achievements", uiSkin);
+		useButton = new TextButton("Use", uiSkin);
+		equipButton = new TextButton("Equip", uiSkin);
+		craftButton = new TextButton("Craft", uiSkin);
 		
 		statusWidgets = new StatusWidget[7];
 		for(int i = 0; i < statusWidgets.length; i++)
@@ -62,11 +68,10 @@ public class InventoryScreen extends BaseScreen {
 		
 		inventoryButton.setName("inventory");
 		achievementButton.setName("achievements");
-		statusWidgets[3].setName("equip");
-		statusWidgets[4].setName("equip");
-		statusWidgets[5].setName("equip");
-		statusWidgets[6].setName("equip");
-				
+		useButton.setName("use");
+		equipButton.setName("equip");
+		craftButton.setName("craft");
+		
 		// ----- craftLayout 1 x 3 -----
 		
 		// Row One
@@ -80,6 +85,7 @@ public class InventoryScreen extends BaseScreen {
 		for(int i = 3; i < statusWidgets.length; i++) {
 			
 			statusWidgets[i].setIndex(i-3);
+			statusWidgets[i].setName("equip");
 			vanityGroup.addActor(statusWidgets[i].getLayout());
 		}
 		
@@ -124,20 +130,56 @@ public class InventoryScreen extends BaseScreen {
 				
 				else if(name == achievementButton.getName())
 					populateAchievements();
+				
+				else if(name == useButton.getName())
+					dialogListener.useItemAction();
+				
+				else if(name == equipButton.getName())
+					dialogListener.equipItemAction();
+				
+				else if(name == craftButton.getName())
+					dialogListener.craftItemAction();
+				
+				if(exitDialog != null)
+					exitDialog.hide();
 			}
 		};
 		
 		dialogListener = new UtilityListener() {
 			
-			private Item item;
+			private Item selectedItem;
 			
 			@Override
 			public void squareWidgetAction(Item item) {
 				
-				this.item = item;
-				QleekDialog dialog = new QleekDialog(item);
-				dialog.addListener(dialogListener);
-				dialog.show(HUD);
+				this.selectedItem = item;
+				exitDialog = new ExitDialog() {
+
+					@Override
+					public void create() {
+						
+						Table dialogLayout = getContentTable();
+						
+						dialogLayout.add(selectedItem.getName()).colspan(3);
+						dialogLayout.row();
+						
+						dialogLayout.add(new Image(selectedItem.getRegion())).colspan(2);
+						dialogLayout.add(selectedItem.getName());
+						dialogLayout.row();
+						
+						dialogLayout.add(selectedItem.getDescription()).colspan(3);
+						dialogLayout.row();
+						
+						if(selectedItem.isUsable())
+							dialogLayout.add(useButton).uniform().fill();
+						else
+							dialogLayout.add().uniform().fill();
+						
+						dialogLayout.add(equipButton).uniform().fill();
+						dialogLayout.add(craftButton).uniform().fill()
+							.height(Gdx.graphics.getHeight() * 0.04F);
+					}
+				}.show(HUD);
 			}
 			
 			@Override
@@ -153,31 +195,31 @@ public class InventoryScreen extends BaseScreen {
 				if(!statusWidgets[3].isReady()) {
 					
 					equipped = true;
-					statusWidgets[3].setItem(item);
-					qleek.player.getEquips().set(0, item);	
+					statusWidgets[3].setItem(selectedItem);
+					qleek.player.getEquips().set(0, selectedItem);	
 				} 
 				else if(!statusWidgets[4].isReady()) {
 					
 					equipped = true;
-					statusWidgets[4].setItem(item);
-					qleek.player.getEquips().set(1, item);	
+					statusWidgets[4].setItem(selectedItem);
+					qleek.player.getEquips().set(1, selectedItem);	
 				} 
 				else if(!statusWidgets[5].isReady()) {
 					
 					equipped = true;
-					statusWidgets[5].setItem(item);
-					qleek.player.getEquips().set(2, item);
+					statusWidgets[5].setItem(selectedItem);
+					qleek.player.getEquips().set(2, selectedItem);
 				} 
 				else if(!statusWidgets[6].isReady()) {
 					
 					equipped = true;
-					statusWidgets[6].setItem(item);
-					qleek.player.getEquips().set(3, item);
+					statusWidgets[6].setItem(selectedItem);
+					qleek.player.getEquips().set(3, selectedItem);
 				}
 				
 				if(equipped) {
 					
-					qleek.player.removeItem(item.getItemID());
+					qleek.player.removeItem(selectedItem.getItemID());
 					reloadInventory();
 				}
 			}
@@ -185,17 +227,17 @@ public class InventoryScreen extends BaseScreen {
 			@Override
 			public void craftItemAction() {
 				
-				qleek.player.removeItem(item.getItemID());
+				qleek.player.removeItem(selectedItem.getItemID());
 				
 				if(!statusWidgets[0].isReady())
-					statusWidgets[0].setItem(item);
+					statusWidgets[0].setItem(selectedItem);
 				
 				else if(!statusWidgets[1].isReady())
-					statusWidgets[1].setItem(item);
+					statusWidgets[1].setItem(selectedItem);
 				
 				else {
 					
-					statusWidgets[2].setItem(item);
+					statusWidgets[2].setItem(selectedItem);
 					craft();
 				}
 				
@@ -220,6 +262,10 @@ public class InventoryScreen extends BaseScreen {
 		
 		inventoryButton.addListener(inventoryListener);
 		achievementButton.addListener(inventoryListener);
+		useButton.addListener(inventoryListener);
+		equipButton.addListener(inventoryListener);
+		craftButton.addListener(inventoryListener);
+		
 		for(int i = 0; i < statusWidgets.length; i++)
 			statusWidgets[i].addListener(dialogListener);
 	}

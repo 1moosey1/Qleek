@@ -38,32 +38,22 @@ public class SaveManager {
 			unparsedData = fileHandle.readString();
 		} catch(GdxRuntimeException ex) {
 			
-			System.out.println("Save file not found");
 			hasData = false;
 			return;
 		}
 		
-		System.out.println("Save file found");
 		System.out.println(unparsedData);
 		System.out.println(Base64Coder.decodeString(unparsedData));
 		
 		hasData = true;
 		String[] saveData = Base64Coder.decodeString(unparsedData).split(DIV);
 		
-		timeData   = saveData[0];	
-		playerData = saveData[1].split(":");
-
-		invData    = saveData[2].split("\\*");
-		System.out.println(saveData[2]);
-		
-		equipData  = saveData[3].split("\\*");
-		System.out.println(saveData[3]);
-		
-		achieveData = saveData[4].split("\\*");
-		System.out.println(saveData[4]);
-		
+		timeData    = saveData[0];	
+		playerData  = saveData[1].split(":");
+		invData     = saveData[2].split("\\*");		
+		equipData   = saveData[3].split("\\*");		
+		achieveData = saveData[4].split("\\*");		
 		serviceData = saveData[5].split("\\*");
-		System.out.println(saveData[5]);
 	}
 	
 	public void writeSave(Qleek qleek) {
@@ -89,8 +79,7 @@ public class SaveManager {
 		// Equip Data
 		for(Item item : player.getEquips())
 			if(item != null)
-				saveData.append(item.getItemID().toString() + ":" 
-						+ item.getAPS() + "*");
+				saveData.append(item.getItemID().toString() + ":" + item.getAPS() + "*");
 			else
 				saveData.append("0*");
 		saveData.append(DIV);

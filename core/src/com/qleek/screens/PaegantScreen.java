@@ -3,17 +3,19 @@ package com.qleek.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
+import com.qleek.player.Item;
 import com.qleek.player.Paegant;
 import com.qleek.utils.Prize;
 import com.qleek.utils.UtilityListener;
 import com.qleek.widgets.PaegantWidget;
-import com.qleek.widgets.QleekDialog;
+import com.qleek.widgets.TimedDialog;
 
 public class PaegantScreen extends BaseScreen {
 	
@@ -97,12 +99,41 @@ public class PaegantScreen extends BaseScreen {
 			@Override
 			public void paegantWidgetAction(Paegant paegant) {
 				
-				Prize prize = paegant.enter(qleek.player.getAffection());
+				final Prize prize = paegant.enter(qleek.player.getAffection());
 				
 				qleek.player.addMoney(prize.getMoney());
 				qleek.player.addItem(prize.getItem());
 				qleek.player.setAffection(0);
-				new QleekDialog(prize).show(HUD);
+				
+				// Display prize information via dialog
+				new TimedDialog() {
+					
+					@Override
+					public void create() {
+						
+						Table dialogLayout = getContentTable();
+					
+						int place = prize.getPlace();
+						if(place == 1)
+							dialogLayout.add("1st Place").colspan(2);
+						else if(place == 2)
+							dialogLayout.add("2nd Place").colspan(2);
+						else if(place == 3)
+							dialogLayout.add("3rd Place").colspan(2);
+						else
+							dialogLayout.add("You did not place");
+						dialogLayout.row();
+					
+						if(prize.getItem() != null) {
+							
+							dialogLayout.add(new Image(Item.getRegion(prize.getItem())));
+							dialogLayout.add(prize.getItem().name());
+						}
+						dialogLayout.row();
+					
+						dialogLayout.add("Earnings: " + prize.getMoney()).colspan(2);
+					}	
+				}.show(HUD);
 			}
 		};
 		

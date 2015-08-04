@@ -81,7 +81,7 @@ public class Paegant {
 				1.25, 1.15, 1.05,
 				Item.ITEMID.ITEM1,
 				Item.ITEMID.ITEM2,
-				Item.ITEMID.ITEM3);
+				Item.ITEMID.ITEM2);
 		
 		// National Paegants
 		// To do

@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
 import com.qleek.utils.Achievement;
 import com.qleek.widgets.HeaderWidget;
-import com.qleek.widgets.QleekDialog;
+import com.qleek.widgets.TimedDialog;
 
 public abstract class BaseScreen implements Screen {
 	
@@ -85,8 +85,24 @@ public abstract class BaseScreen implements Screen {
 	
 	public void displayOptions() {}
 	
-	public void displayAchievement(Achievement achievement) {
-		new QleekDialog(achievement).show(HUD);
+	public void displayAchievement(final Achievement achievement) {
+		
+		new TimedDialog() {
+
+			@Override
+			public void create() {
+				
+				Table dialogLayout = getContentTable();
+				
+				dialogLayout.add("Achievement Unlocked");
+				dialogLayout.row();
+				
+				dialogLayout.add(achievement.getName());
+				dialogLayout.row();
+				
+				dialogLayout.add(achievement.getDescription());
+			}
+		}.show(HUD);
 	}
 	
 	@Override

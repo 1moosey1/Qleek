@@ -45,7 +45,7 @@ public class Qleek extends Game {
 		System.out.println(Gdx.graphics.getHeight());
 		
 		batch = new SpriteBatch();
-		skin = new Skin(Gdx.files.internal("uiskin.json"));
+		skin = new Skin(Gdx.files.internal("ui-orange.json"));
 		
 		// File handling - loading section
 		FileHandle fileHandle;
