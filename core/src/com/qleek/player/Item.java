@@ -1,15 +1,15 @@
 package com.qleek.player;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
 public class Item {
 	
-	public  static Array<ITEMID> shopItems = new Array<ITEMID>();
-	private static TextureAtlas itemAtlas;
-	private static ObjectMap<ITEMID, String[]> info = new ObjectMap<ITEMID, String[]>();
+	public static Array<ITEMID> shopItems;
+	public static TextureAtlas itemAtlas;
+	private static ObjectMap<ITEMID, String[]> info;
 	
 	private ITEMID itemID;
 	private String name, description;
@@ -38,8 +38,9 @@ public class Item {
 	
 	public static void initItems(String itemText) {
 		
+		shopItems = new Array<ITEMID>();
+		info = new ObjectMap<ITEMID, String[]>();
 		String[] text = itemText.split("\\n");
-		shopItems.clear();
 		
 		int textIndex = 0;
 		for(ITEMID id : ITEMID.values())
@@ -49,20 +50,17 @@ public class Item {
 		shopItems.addAll(ITEMID.ITEM1, ITEMID.ITEM2);
 	}
 	
-	public static TextureRegion getBase() { return itemAtlas.findRegion("base"); }
-	public static TextureRegion getRegion(ITEMID id) {
-		return itemAtlas.findRegion(id.name());
-	}
+	public static Sprite getBase() { return itemAtlas.createSprite("base"); }
+	public Sprite getSRegion() { return itemAtlas.createSprite(itemID.name()); }
 	
-	public ITEMID  getItemID()       { return itemID;           }
-	public String  getName()         { return name;             }
-	public String  getDescription()  { return description;      }
-	public boolean isUsable()        { return useable;          }
-	public boolean isSpecial()       { return special;          }
-	public int     getQuantity()     { return quantity;         }
-	public int     getCost()         { return cost;             }
-	public int     getAPS()          { return aps;              }
-	public TextureRegion getRegion() { return itemAtlas.findRegion(itemID.name()); }
+	public ITEMID  getItemID()       { return itemID;      }
+	public String  getName()         { return name;        }
+	public String  getDescription()  { return description; }
+	public boolean isUsable()        { return useable;     }
+	public boolean isSpecial()       { return special;     }
+	public int     getQuantity()     { return quantity;    }
+	public int     getCost()         { return cost;        }
+	public int     getAPS()          { return aps;         }
 	
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;

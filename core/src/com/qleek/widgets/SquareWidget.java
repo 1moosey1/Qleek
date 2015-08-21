@@ -1,6 +1,5 @@
 package com.qleek.widgets;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
@@ -18,7 +17,7 @@ public class SquareWidget extends BaseWidget {
 		
 		this.item = item;
 		widgetLayout.setSkin(Qleek.skin);
-		widgetLayout.setBackground(new SpriteDrawable(new Sprite(item.getRegion())));
+		widgetLayout.setBackground(new SpriteDrawable(item.getSRegion()));
 		widgetLayout.setTouchable(Touchable.enabled);
 		widgetLayout.add("x" + item.getQuantity()).bottom().right();
 		

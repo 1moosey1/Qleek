@@ -135,7 +135,7 @@ public class ShopScreen extends BaseScreen {
 			changableWidgets.clear();
 			verticalGroup.clearChildren();
 			
-			for(Service service : Service.getServices()) {
+			for(Service service : Service.serviceList) {
 				
 				ServiceWidget widget = new ServiceWidget(service);
 				widget.addListener(widgetListener);
@@ -186,5 +186,11 @@ public class ShopScreen extends BaseScreen {
 			
 		for(CostChangable widget : changableWidgets)
 			widget.updateCostProperty(qleek.player.getMoney());
+	}
+	
+	@Override
+	public void dispose() {
+		
+		super.dispose();
 	}
 }

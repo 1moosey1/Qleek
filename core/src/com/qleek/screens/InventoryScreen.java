@@ -152,7 +152,7 @@ public class InventoryScreen extends BaseScreen {
 			@Override
 			public void squareWidgetAction(Item item) {
 				
-				this.selectedItem = item;
+				selectedItem = item;
 				exitDialog = new ExitDialog() {
 
 					@Override
@@ -160,10 +160,10 @@ public class InventoryScreen extends BaseScreen {
 						
 						Table dialogLayout = getContentTable();
 						
-						dialogLayout.add(selectedItem.getName()).colspan(3);
+						dialogLayout.add(selectedItem.getName()).colspan(3).padBottom(20);
 						dialogLayout.row();
 						
-						dialogLayout.add(new Image(selectedItem.getRegion())).colspan(2);
+						dialogLayout.add(new Image(selectedItem.getSRegion())).colspan(2);
 						dialogLayout.add(selectedItem.getName());
 						dialogLayout.row();
 						
@@ -345,7 +345,7 @@ public class InventoryScreen extends BaseScreen {
 			
 			achievementGroup.clearGroup();
 			for(Achievement achievement : Achievement.values())
-				achievementGroup.addToGroup(new Image(qleek.itemAtlas.findRegion("base")));
+				achievementGroup.addToGroup(new Image(Item.getBase()));
 			
 			inventoryShowing = false;
 		}
@@ -372,5 +372,12 @@ public class InventoryScreen extends BaseScreen {
 	@Override
 	public void hide() {
 		inventoryShowing = false;
+	}
+	
+	@Override
+	public void dispose() {
+		
+		super.dispose();
+		Item.itemAtlas.dispose();
 	}
 }

@@ -1,48 +1,40 @@
 package com.qleek.widgets;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.qleek.player.Paegant;
 
 public class PaegantWidget extends BaseWidget {
 	
 	private Paegant paegant;
-	private TextButton enterButton;
-	private Label nameLabel, descriptionLabel;
 	
 	public PaegantWidget(Paegant paegant) {
 		
 		this.paegant = paegant;
-		
-		enterButton = new TextButton("Enter", uiSkin);
-		nameLabel = new Label(paegant.getName(), uiSkin);
-		descriptionLabel = new Label(paegant.getDescription(), uiSkin);
-		
 		create();
 	}
 
 	private void create() {
 		
-		nameLabel.setWrap(true);
-		descriptionLabel.setWrap(true);
+		ImageButtonStyle style = new ImageButtonStyle();
+		style.imageUp = new SpriteDrawable(paegant.getBRegion());
+		ImageButton paegantButton = new ImageButton(style);
 		
 		// ----- widgetLayout - 2 x 3 -----
 		
-		widgetLayout.setDebug(true);
-		widgetLayout.defaults().expand().uniform();
+		//widgetLayout.defaults().expand().uniform();
+		widgetLayout.setSkin(uiSkin);
+		widgetLayout.setBackground(new SpriteDrawable(paegant.getSRegion()));
 		
 		// Row One
-		widgetLayout.add(nameLabel).fill().colspan(2).center();
-		widgetLayout.add(enterButton).fill()
-			.height(Gdx.graphics.getHeight() * 0.07F);
+		widgetLayout.add(paegant.getName());
 		widgetLayout.row();
 		
 		// Row Two
-		widgetLayout.add(descriptionLabel).fill().colspan(3).left();
-		widgetLayout.row();
+		widgetLayout.add(paegantButton);
 		
 		// ----- End widgetLayout -----
 		
@@ -59,6 +51,6 @@ public class PaegantWidget extends BaseWidget {
 			}
 		};
 		
-		enterButton.addListener(paegantListener);
+		paegantButton.addListener(paegantListener);
 	}
 }

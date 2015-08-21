@@ -7,9 +7,7 @@ import com.qleek.utils.Observable;
 public class Service extends Observable {
 	
 	public static final int MAXLEVEL = 999;
-	
-	private static Array<Service> serviceList
-		= new Array<Service>();
+	public static Array<Service> serviceList;
 	
 	private SERVICE service;
 	private String name, description;
@@ -29,15 +27,14 @@ public class Service extends Observable {
 	
 	public static void initServices(String serviceText) {
 		
+		serviceList = new Array<Service>();
 		String[] text = serviceText.split("\\n");
-		serviceList.clear();
 		
 		int textIndex = 0;
 		for(SERVICE srv : SERVICE.values())
 			new Service(text[textIndex++], text[textIndex++], srv);
 	}
 	
-	public static Array<Service> getServices() { return serviceList; }	
 	public String  getName()         { return name;             }
 	public String  getDescription()  { return description;      }
 	public int     getCost()         { return cost;             }

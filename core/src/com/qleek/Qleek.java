@@ -31,7 +31,6 @@ public class Qleek extends Game {
 	public Achievements achievements;
 	public UtilityListener achievementListener;
 	
-	public TextureAtlas itemAtlas;
 	public BaseScreen gameScreen, paegantScreen, shopScreen,
 		inventoryScreen, wwyScreen;
 	
@@ -52,9 +51,16 @@ public class Qleek extends Game {
 		
 		// Load game images
 		// Item images
-		fileHandle = Gdx.files.internal("Items/ItemPack.pack");
-		itemAtlas = new TextureAtlas(fileHandle);
-		Item.setAtlas(itemAtlas);
+		TextureAtlas atlas;
+		
+		fileHandle = Gdx.files.internal("item/ItemPack.pack");
+		atlas = new TextureAtlas(fileHandle);
+		Item.setAtlas(atlas);
+		
+		// Paegamt Images
+		fileHandle = Gdx.files.internal("paegant/paegant.pack");
+		atlas = new TextureAtlas(fileHandle);
+		Paegant.setAtlas(atlas);
 		
 		// Initialize player
 		player = new Player();
@@ -83,15 +89,15 @@ public class Qleek extends Game {
 		Observable.addObserver(achievements);
 		
 		// Load all the services in the game
-		fileHandle = Gdx.files.internal("service.meow");
+		fileHandle = Gdx.files.internal("data/service.meow");
 		Service.initServices(fileHandle.readString());
 		
 		// Load item text in the game
-		fileHandle = Gdx.files.internal("item.meow");
+		fileHandle = Gdx.files.internal("data/item.meow");
 		Item.initItems(fileHandle.readString());
 		
 		// Load all the paegants in the game
-		fileHandle = Gdx.files.internal("paegant.meow");
+		fileHandle = Gdx.files.internal("data/paegant.meow");
 		Paegant.initPaegants(fileHandle.readString());
 		
 		// Load game save data
@@ -151,7 +157,7 @@ public class Qleek extends Game {
 			}
 			
 			// Load saved service data
-			Array<Service> serviceList = Service.getServices();
+			Array<Service> serviceList = Service.serviceList;
 			saveData = saveManager.getServiceData();
 			for(int i = 0; i < saveData.length; i++)
 				serviceList.get(i).setLevel(Integer.parseInt(saveData[i]));
@@ -180,8 +186,6 @@ public class Qleek extends Game {
 		
 		skin.dispose();
 		batch.dispose();
-		
-		itemAtlas.dispose();
 		
 		gameScreen.dispose();
 		paegantScreen.dispose();

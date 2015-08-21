@@ -29,8 +29,6 @@ public class ItemWidget extends BaseWidget implements CostChangable {
 	private void create() {
 		
 		// ----- widgetLayout - 2 x 3 -----
-		
-		widgetLayout.setDebug(true);
 		widgetLayout.defaults().expand().uniform();
 		
 		// Row One

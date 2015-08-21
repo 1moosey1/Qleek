@@ -90,7 +90,7 @@ public class SaveManager {
 		saveData.append(DIV);
 		
 		// Service Data
-		for(Service service : Service.getServices())
+		for(Service service : Service.serviceList)
 			saveData.append(service.getLevel() + "*");
 		
 		// Write data

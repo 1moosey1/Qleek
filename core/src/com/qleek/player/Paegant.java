@@ -1,12 +1,15 @@
 package com.qleek.player;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
+import com.qleek.player.Item.ITEMID;
 import com.qleek.utils.Prize;
 
 public class Paegant {
 	
-	private static Array<Paegant> paegantList
-		= new Array<Paegant>();
+	public static Array<Paegant> paegantList;
+	public static TextureAtlas paegantAtlas;
 	
 	private PAEGANT paegant;
 	private String name, description;
@@ -20,19 +23,32 @@ public class Paegant {
 		paegantList.add(this);
 	}
 	
+	public static void setAtlas(TextureAtlas atlas) {
+		paegantAtlas = atlas;
+	}
+	
 	public static void initPaegants(String paegantText) {
 		
+		paegantList = new Array<Paegant>();
 		String[] text = paegantText.split("\\n");
-		paegantList.clear();
 		
 		int textIndex = 0;
 		for(PAEGANT  pgnt : PAEGANT.values())
 			new Paegant(text[textIndex++], text[textIndex++], pgnt);
 	}
 	
-	public static Array<Paegant> getServices() { return paegantList; }
+	public Sprite getSRegion() { return paegantAtlas.createSprite(paegant.name()); }
+	public Sprite getBRegion() { return paegantAtlas.createSprite(paegant.name() + "B"); } 
 	public String  getName()         { return name;             }
 	public String  getDescription()  { return description;      }
+	
+	public ITEMID[] getRewards() { 
+		return new ITEMID[] {paegant.prize1, paegant.prize2, paegant.prize3}; 
+	}
+	
+	public double[] getOdds() {
+		return new double[] {paegant.percent1, paegant.percent2, paegant.percent3};
+	}
 	
 	public Prize enter(int affection) {
 		
@@ -77,22 +93,16 @@ public class Paegant {
 	private enum PAEGANT {
 		
 		// Local Paegant
-		LOCALONE(5, 10, 15,
-				1.25, 1.15, 1.05,
-				Item.ITEMID.ITEM1,
-				Item.ITEMID.ITEM2,
-				Item.ITEMID.ITEM2);
-		
-		// National Paegants
-		// To do
+		LOCALONE(5, 10, 15, 1.25, 1.15, 1.05,
+				ITEMID.ITEM1, ITEMID.ITEM2, ITEMID.ITEM2);
 		
 		final int percent1, percent2, percent3;
 		final double multp1, multp2, multp3;
-		final Item.ITEMID prize1, prize2, prize3;
+		final ITEMID prize1, prize2, prize3;
 		
 		PAEGANT(int p1, int p2, int p3, 
 				double m1, double m2, double m3,
-				Item.ITEMID... prizes) {
+				ITEMID r1, ITEMID r2, ITEMID r3) {
 			
 			percent1 = p1;
 			percent2 = p2;
@@ -102,9 +112,9 @@ public class Paegant {
 			multp2 = m2;
 			multp3 = m3;
 			
-			prize1 = prizes[0];
-			prize2 = prizes[1];
-			prize3 = prizes[2];
+			prize1 = r1;
+			prize2 = r2;
+			prize3 = r3;
 		}
 	}
 }

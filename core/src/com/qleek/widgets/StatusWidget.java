@@ -1,7 +1,5 @@
 package com.qleek.widgets;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -12,14 +10,12 @@ import com.qleek.player.Item.ITEMID;
 public class StatusWidget extends BaseWidget {
 
 	private Item item;
-	private TextureRegion baseTexture;
 	private int index;
 	private boolean ready;
 	
 	public StatusWidget() {
 		
-		baseTexture = Item.getBase();
-		widgetLayout.setBackground(new SpriteDrawable(new Sprite(baseTexture)));
+		widgetLayout.setBackground(new SpriteDrawable(Item.getBase()));
 		widgetLayout.setTouchable(Touchable.enabled);
 		widgetLayout.addListener(new InputListener() {
 			
@@ -44,7 +40,7 @@ public class StatusWidget extends BaseWidget {
 	
 		this.item = item;
 		ready = true;
-		widgetLayout.setBackground(new SpriteDrawable(new Sprite(Item.getRegion(item.getItemID()))));
+		widgetLayout.setBackground(new SpriteDrawable(item.getSRegion()));
 	}
 	
 	public void setName(String name) {
@@ -63,6 +59,6 @@ public class StatusWidget extends BaseWidget {
 	public void reset() {
 		
 		ready = false;
-		widgetLayout.setBackground(new SpriteDrawable(new Sprite(baseTexture)));
+		widgetLayout.setBackground(new SpriteDrawable(Item.getBase()));
 	}
 }

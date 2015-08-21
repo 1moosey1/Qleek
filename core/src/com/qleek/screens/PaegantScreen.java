@@ -1,78 +1,46 @@
 package com.qleek.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
 import com.qleek.player.Item;
+import com.qleek.player.Item.ITEMID;
 import com.qleek.player.Paegant;
 import com.qleek.utils.Prize;
 import com.qleek.utils.UtilityListener;
+import com.qleek.widgets.ExitDialog;
 import com.qleek.widgets.PaegantWidget;
 import com.qleek.widgets.TimedDialog;
 
 public class PaegantScreen extends BaseScreen {
 	
-	private Table paegantLayout;
 	private ScrollPane scrollPane;
-	private VerticalGroup verticalGroup;
-	
-	private boolean localShowing;
-	private TextButton localButton, nationalButton;
+	private HorizontalGroup horizontalGroup;
 	private InputListener paegantListener;
 	private UtilityListener widgetListener;
+	private Paegant selectedPaegant;
+	
+	private ExitDialog paegantDialog;
 
 	public PaegantScreen(Qleek game) {
 		
 		super(game);
 		
-		paegantLayout = new Table();
-		verticalGroup = new VerticalGroup();
-		scrollPane = new ScrollPane(verticalGroup);
-		
-		localButton = new TextButton("Local", uiSkin);
-		nationalButton = new TextButton("National", uiSkin);
+		horizontalGroup = new HorizontalGroup();
+		scrollPane = new ScrollPane(horizontalGroup);
 		
 		create();
 	}
 
 	private void create() {
 		
-		localButton.setName("local");
-		nationalButton.setName("national");
-		
-		verticalGroup.fill();
-		
-		// ----- paegantLayout 2 x 2 -----
-		
-		paegantLayout.setDebug(true);
-		paegantLayout.defaults().expand().fill();
-		
-		// Row One
-		paegantLayout.add(localButton).uniformX();
-		paegantLayout.add(nationalButton).uniformX();	
-		paegantLayout.row();
-			
-		// Row Two
-		paegantLayout.add(scrollPane).colspan(2)
-			.width(Gdx.graphics.getWidth() * 0.9F)
-			.height(Gdx.graphics.getHeight() * 0.725F);
-		
-		// ----- End paegantLayout -----
-		
-		// ----- screenLayout 2 x 1 -----
-		
-		// Row Two
-		screenLayout.add(paegantLayout).fill()
-			.height(Gdx.graphics.getHeight() * 0.8F);
-		
-		// ----- End screenLayout -----
+		horizontalGroup.fill();
+		screenLayout.add(scrollPane);
 		
 		paegantListener = new InputListener() {
 			
@@ -84,22 +52,8 @@ public class PaegantScreen extends BaseScreen {
 			@Override
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 				
-				String name = event.getListenerActor().getName();
-				
-				if(name == localButton.getName())
-					populateLocal();
-				
-				else if(name == nationalButton.getName())
-					populateNational();
-			}
-		};
-		
-		widgetListener = new UtilityListener() {
-			
-			@Override
-			public void paegantWidgetAction(Paegant paegant) {
-				
-				final Prize prize = paegant.enter(qleek.player.getAffection());
+				paegantDialog.setVisible(false);
+				final Prize prize = selectedPaegant.enter(qleek.player.getAffection());
 				
 				qleek.player.addMoney(prize.getMoney());
 				qleek.player.addItem(prize.getItem());
@@ -126,47 +80,96 @@ public class PaegantScreen extends BaseScreen {
 					
 						if(prize.getItem() != null) {
 							
-							dialogLayout.add(new Image(Item.getRegion(prize.getItem())));
+							dialogLayout.add(new Image(Item.itemAtlas.findRegion(prize.getItem().name())));
 							dialogLayout.add(prize.getItem().name());
 						}
 						dialogLayout.row();
 					
 						dialogLayout.add("Earnings: " + prize.getMoney()).colspan(2);
 					}	
+					
+					@Override
+					public void hide() {
+					
+						super.hide();
+						paegantDialog.setVisible(true);
+					}
 				}.show(HUD);
 			}
 		};
 		
-		localButton.addListener(paegantListener);
-		nationalButton.addListener(paegantListener);
+		widgetListener = new UtilityListener() {
+			
+			@Override
+			public void paegantWidgetAction(Paegant paegant) {
+				
+				selectedPaegant = paegant;
+				
+				paegantDialog = new ExitDialog() {
+
+					@Override
+					public void create() {
+						
+						Table dialogLayout = getContentTable();
+						dialogLayout.setSkin(uiSkin);
+						
+						dialogLayout.add(selectedPaegant.getName()).colspan(3).padBottom(20);
+						dialogLayout.row();
+						
+						dialogLayout.add(selectedPaegant.getDescription()).colspan(3);
+						dialogLayout.row();
+						
+						dialogLayout.add("1st Place");
+						dialogLayout.add("2nd Place");
+						dialogLayout.add("3rd Place");
+						dialogLayout.row();
+						
+						ITEMID[] rewards = selectedPaegant.getRewards();
+						dialogLayout.add(new Image(Item.itemAtlas.findRegion(rewards[0].name()))).padLeft(20);
+						dialogLayout.add(new Image(Item.itemAtlas.findRegion(rewards[1].name())));
+						dialogLayout.add(new Image(Item.itemAtlas.findRegion(rewards[2].name()))).padRight(20);
+						dialogLayout.row();
+						
+						double[] odds = selectedPaegant.getOdds();
+						dialogLayout.add(odds[0] + "%");
+						dialogLayout.add(odds[1] + "%");
+						dialogLayout.add(odds[2] + "%");
+						dialogLayout.row();
+						
+						TextButton enterButton = new TextButton("Enter Paegant", uiSkin);
+						dialogLayout.add(enterButton).colspan(3);
+						enterButton.addListener(paegantListener);
+					}
+				};
+				paegantDialog.show(HUD);
+			}
+		};
 	}
 	
 	private void populateLocal() {
-		
-		Array<Paegant> paegantList = Paegant.getServices();
-		if(!verticalGroup.hasChildren() || !localShowing) {
 			
-			verticalGroup.clearChildren();
-			for(Paegant paegant : paegantList) {
+		horizontalGroup.clearChildren();
+		for(Paegant paegant : Paegant.paegantList) {
 				
-				PaegantWidget widget = new PaegantWidget(paegant);
-				widget.addListener(widgetListener);
-				
-				verticalGroup.addActor(widget.getLayout());
-			}
+			PaegantWidget widget = new PaegantWidget(paegant);
+			widget.addListener(widgetListener);
 			
-			localShowing = true;
+			System.out.println("Added");
+			horizontalGroup.addActor(widget.getLayout());
 		}
 	}
-	
-	private void populateNational() {
-		// To do
-	}
-	
+
 	@Override
 	public void show() {
 		
 		super.show();
 		populateLocal();
+	}
+	
+	@Override
+	public void dispose() {
+		
+		super.dispose();
+		Paegant.paegantAtlas.dispose();
 	}
 }

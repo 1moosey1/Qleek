@@ -17,6 +17,7 @@ public abstract class ExitDialog extends Dialog {
 		
 		super("", Qleek.skin, "exitdialog");
 		setModal(true);
+		setMovable(false);
 		
 		exitButton = new ImageButton(Qleek.skin.getDrawable("checkbox_cross"));
 		exitListener = new InputListener() {
@@ -32,7 +33,7 @@ public abstract class ExitDialog extends Dialog {
 			}
 		};
 		exitButton.addListener(exitListener);	
-		getTitleTable().add(exitButton).size(60, 40).padRight(-30).padTop(-10);
+		getTitleTable().add(exitButton).size(60, 40).padRight(-35).padTop(-5);
 		
 		create();
 	}

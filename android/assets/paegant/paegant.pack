@@ -1,0 +1,19 @@
+
+paegant.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+LOCALONE
+  rotate: false
+  xy: 1, 1
+  size: 620, 928
+  orig: 620, 928
+  offset: 0, 0
+  index: -1
+LOCALONEB
+  rotate: false
+  xy: 623, 782
+  size: 110, 147
+  orig: 110, 147
+  offset: 0, 0
+  index: -1
