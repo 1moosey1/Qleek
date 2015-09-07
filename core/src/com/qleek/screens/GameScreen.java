@@ -1,7 +1,6 @@
 package com.qleek.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -9,12 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.Qleek;
 import com.qleek.utils.TableUtils;
+import com.qleek.widgets.ExitDialog;
 
 public class GameScreen extends BaseScreen {
 	
 	private Table buttonLayout;
 	private TextButton paegantButton, shopButton, inventoryButton, wwyButton;
-	private InputListener menuListener;
 	
 	// Test cat image
 	private Texture texture;
@@ -68,8 +67,8 @@ public class GameScreen extends BaseScreen {
 		
 		// ----- End screenlayout -----
 		
-		// Anon class for handling hud buttons
-		menuListener = new InputListener() {
+		// Inner class for handling hud buttons (no reference saved)
+		InputListener menuListener = new InputListener() {
 			
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {	
@@ -100,27 +99,47 @@ public class GameScreen extends BaseScreen {
 		inventoryButton.addListener(menuListener);
 		wwyButton.addListener(menuListener);
 		
-		//Seperate instance that enables touch responce for this screen
+		// Seperate instance that enables touch responce for this screen
 		inputMultiplexer.removeProcessor(screenProcessor);
 		screenProcessor = new GameProcessor();
 		inputMultiplexer.addProcessor(screenProcessor);
 	}
 	
-	@Override
-	public void render(float delta) {
+	private void displayCatNotif() {
 		
-		qleek.player.update(delta);
-		headerWidget.updateDisplay(qleek.player);
+		new ExitDialog() {
+
+			@Override
+			public void create() {
+				
+				Table dialogLayout = getContentTable();
+				
+				dialogLayout.add("Where is your cat?");
+				dialogLayout.row();
+				
+				dialogLayout.add("You seem to be lacking a cat").padTop(20);
+				dialogLayout.row();
+				
+				dialogLayout.add("Head over to the options menu to adopt a new one");
+			}	
+		}.show(HUD);
+	}
+	
+	@Override 
+	public void draw() {
 		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+		super.draw();
 		qleek.batch.begin();
 		qleek.batch.draw(texture, 142, 416);
 		qleek.batch.end();
+	}
+	
+	@Override
+	public void show() {
 		
-		HUD.act(delta);
-		HUD.draw();
+		super.show();
+		if(qleek.player.getCat() == null)
+			displayCatNotif();
 	}
 	
 	@Override

@@ -24,7 +24,6 @@ public class PaegantScreen extends BaseScreen {
 	private InputListener paegantListener;
 	private UtilityListener widgetListener;
 	private Paegant selectedPaegant;
-	
 	private ExitDialog paegantDialog;
 
 	public PaegantScreen(Qleek game) {

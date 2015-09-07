@@ -196,25 +196,25 @@ public class InventoryScreen extends BaseScreen {
 					
 					equipped = true;
 					statusWidgets[3].setItem(selectedItem);
-					qleek.player.getEquips().set(0, selectedItem);	
+					qleek.player.equip(0, selectedItem);	
 				} 
 				else if(!statusWidgets[4].isReady()) {
 					
 					equipped = true;
 					statusWidgets[4].setItem(selectedItem);
-					qleek.player.getEquips().set(1, selectedItem);	
+					qleek.player.equip(1, selectedItem);
 				} 
 				else if(!statusWidgets[5].isReady()) {
 					
 					equipped = true;
 					statusWidgets[5].setItem(selectedItem);
-					qleek.player.getEquips().set(2, selectedItem);
+					qleek.player.equip(2, selectedItem);
 				} 
 				else if(!statusWidgets[6].isReady()) {
 					
 					equipped = true;
 					statusWidgets[6].setItem(selectedItem);
-					qleek.player.getEquips().set(3, selectedItem);
+					qleek.player.equip(3, selectedItem);
 				}
 				
 				if(equipped) {

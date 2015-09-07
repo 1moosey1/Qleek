@@ -7,12 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.utils.Array;
 import com.qleek.Qleek;
 import com.qleek.player.Item;
 import com.qleek.player.Service;
 import com.qleek.utils.UtilityListener;
-import com.qleek.widgets.CostChangable;
 import com.qleek.widgets.ItemWidget;
 import com.qleek.widgets.ServiceWidget;
 
@@ -26,8 +24,6 @@ public class ShopScreen extends BaseScreen {
 	private TextButton serviceButton, shopButton;
 	private InputListener shopListener;
 	private UtilityListener widgetListener;
-	
-	private Array<CostChangable> changableWidgets;
 
 	public ShopScreen(Qleek game) {
 		
@@ -39,8 +35,6 @@ public class ShopScreen extends BaseScreen {
 		
 		serviceButton = new TextButton("Services", uiSkin);
 		shopButton = new TextButton("Shop", uiSkin);
-		
-		changableWidgets = new Array<CostChangable>();
 		
 		create();
 	}
@@ -132,15 +126,11 @@ public class ShopScreen extends BaseScreen {
 		
 		if(!verticalGroup.hasChildren() || !serviceShowing) {
 			
-			changableWidgets.clear();
 			verticalGroup.clearChildren();
-			
 			for(Service service : Service.serviceList) {
 				
 				ServiceWidget widget = new ServiceWidget(service);
 				widget.addListener(widgetListener);
-				
-				changableWidgets.add(widget);
 				verticalGroup.addActor(widget.getLayout());
 			}
 			
@@ -152,7 +142,6 @@ public class ShopScreen extends BaseScreen {
 				
 		if(serviceShowing) {
 			
-			changableWidgets.clear();
 			verticalGroup.clearChildren();
 
 			for(Item.ITEMID itemID : Item.shopItems) {
@@ -163,8 +152,6 @@ public class ShopScreen extends BaseScreen {
 				
 				ItemWidget widget = new ItemWidget(item);
 				widget.addListener(widgetListener);
-
-				changableWidgets.add(widget);
 				verticalGroup.addActor(widget.getLayout());
 			}
 			
@@ -177,15 +164,6 @@ public class ShopScreen extends BaseScreen {
 		
 		super.show();
 		populateService();
-	}
-	
-	@Override
-	public void render(float delta) {
-		
-		super.render(delta);
-			
-		for(CostChangable widget : changableWidgets)
-			widget.updateCostProperty(qleek.player.getMoney());
 	}
 	
 	@Override

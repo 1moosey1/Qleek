@@ -19,7 +19,7 @@ public abstract class ExitDialog extends Dialog {
 		setModal(true);
 		setMovable(false);
 		
-		exitButton = new ImageButton(Qleek.skin.getDrawable("checkbox_cross"));
+		exitButton = new ImageButton(Qleek.skin.getDrawable("checkboxcross"));
 		exitListener = new InputListener() {
 			
 			@Override

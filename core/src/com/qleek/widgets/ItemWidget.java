@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Item;
 
-public class ItemWidget extends BaseWidget implements CostChangable {
+public class ItemWidget extends BaseWidget {
 	
 	private Item item;
 	private TextButton purchaseButton;
@@ -70,14 +70,5 @@ public class ItemWidget extends BaseWidget implements CostChangable {
 		
 		item.incQuantity();
 		quantityLabel.setText("x" + item.getQuantity());
-	}
-	
-	@Override
-	public void updateCostProperty(int playerMoney) {
-		
-		if(item.getCost() > playerMoney)
-			purchaseButton.setDisabled(true);
-		else
-			purchaseButton.setDisabled(false);
 	}
 }

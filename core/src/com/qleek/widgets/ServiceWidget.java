@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Service;
 
-public class ServiceWidget extends BaseWidget implements CostChangable {
+public class ServiceWidget extends BaseWidget {
 	
 	private Service service;
 	private TextButton upgradeButton;
@@ -85,14 +85,5 @@ public class ServiceWidget extends BaseWidget implements CostChangable {
 	
 	public Service getService() {
 		return service;
-	}
-	
-	@Override
-	public void updateCostProperty(int playerMoney) {
-		
-		if(service.getCost() > playerMoney)
-			upgradeButton.setDisabled(true);
-		else
-			upgradeButton.setDisabled(false);
 	}
 }

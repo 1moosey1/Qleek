@@ -6,6 +6,7 @@ import com.qleek.utils.Observable;
 
 public class Player extends Observable {
 
+	private Cat playerCat;
 	private int affection, aps, apsDelta, money;
 	private float cumulatedTime;
 	private Array<Item> inventory, equips;
@@ -22,6 +23,9 @@ public class Player extends Observable {
 	
 	public void update(float delta) {
 		
+		if(playerCat == null || playerCat.isDead())
+			return;
+		
 		cumulatedTime += delta;
 		
 		if(cumulatedTime >= 1) {
@@ -32,6 +36,9 @@ public class Player extends Observable {
 			cumulatedTime -= 1;
 			apsDelta = 0;
 			
+			// Update cat every second
+			playerCat.update();
+			
 		} else {
 		
 			int value = (int) (delta * aps);
@@ -40,11 +47,19 @@ public class Player extends Observable {
 		}
 	}
 	
+	/*******************************************************************
+	 *						Getter Functions
+	 *******************************************************************/
+	public Cat getCat() { return playerCat; }
 	public Array<Item> getInventory() { return inventory; }
 	public Array<Item> getEquips()    { return equips;    }
 	public int getAffection() { return affection; }
 	public int getAPS()       { return aps;       }
 	public int getMoney()     { return money;     }
+	
+	/*******************************************************************
+	 *						Setter Functions
+	 *******************************************************************/
 	
 	public void setAffection(int affection) { 
 		this.affection = affection; 
@@ -57,6 +72,10 @@ public class Player extends Observable {
 	public void setMoney(int money) {
 		this.money = money; 
 	}
+	
+	/*******************************************************************
+	 *						Money Related Functions
+	 *******************************************************************/
 	
 	public void addAffection(int value) {
 		affection += value;
@@ -81,6 +100,10 @@ public class Player extends Observable {
 	public void purchase(int cost) {
 		money = money - cost;
 	}
+	
+	/*******************************************************************
+	 *						Item Related Fucntions
+	 *******************************************************************/
 	
 	public void addItem(Item item) {
 		
@@ -126,7 +149,15 @@ public class Player extends Observable {
 		}
 	}
 	
+	public void equip(int index, Item equip) {
+		
+		equips.set(index, equip);
+		addAPS(equip.getAPS());
+	}
+	
 	public void unequip(int index) {
+		
+		addAPS(-equips.get(index).getAPS());
 		equips.set(index, null);
 	}
 	
@@ -139,5 +170,13 @@ public class Player extends Observable {
 		}
 		
 		return 0;
+	}
+	
+	/*******************************************************************
+	 *						Cat Related Functions
+	 *******************************************************************/
+	
+	public void abandonCat() {
+		playerCat = null;
 	}
 }

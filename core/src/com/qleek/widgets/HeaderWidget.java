@@ -1,6 +1,7 @@
 package com.qleek.widgets;
 
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Player;
@@ -8,12 +9,13 @@ import com.qleek.utils.TableUtils;
 
 public class HeaderWidget extends BaseWidget {
 	
-	private TextButton backButton, optionsButton;
+	private ImageButton backButton;
+	private TextButton optionsButton;
 	private Label affectionLabel, apsLabel, meownyLabel;
 	
 	public HeaderWidget() {
 		
-		backButton = new TextButton("< Back", uiSkin);
+		backButton = new ImageButton(uiSkin, "back");
 		optionsButton = new TextButton(".\n.\n.", uiSkin);
 		affectionLabel = new Label("", uiSkin);
 		apsLabel = new Label("", uiSkin);

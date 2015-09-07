@@ -25,7 +25,6 @@ public class PaegantWidget extends BaseWidget {
 		
 		// ----- widgetLayout - 2 x 3 -----
 		
-		//widgetLayout.defaults().expand().uniform();
 		widgetLayout.setSkin(uiSkin);
 		widgetLayout.setBackground(new SpriteDrawable(paegant.getSRegion()));
 		

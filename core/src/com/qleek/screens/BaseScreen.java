@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
 import com.qleek.utils.Achievement;
+import com.qleek.widgets.ExitDialog;
 import com.qleek.widgets.HeaderWidget;
 import com.qleek.widgets.TimedDialog;
 
@@ -28,7 +29,6 @@ public abstract class BaseScreen implements Screen {
 	protected HeaderWidget headerWidget;
 	protected InputMultiplexer inputMultiplexer;
 	protected ScreenProcessor screenProcessor;
-	private InputListener headerListener;
 	
 	public BaseScreen(Qleek game) {
 		
@@ -56,8 +56,8 @@ public abstract class BaseScreen implements Screen {
 			.height(Gdx.graphics.getHeight() * 0.20F);
 		screenLayout.row();
 		
-		// Anon class for handling header buttons
-		headerListener = new InputListener() {
+		// Inner class for handling header buttons (no reference saved)
+		InputListener headerListener = new InputListener() {
 			
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -73,7 +73,7 @@ public abstract class BaseScreen implements Screen {
 					qleek.setScreen(qleek.gameScreen);
 				
 				else if(name == headerWidget.optionsButtonName())
-					qleek.setScreen(qleek.gameScreen);
+					displayOptions();
 			}
 		};
 		
@@ -83,7 +83,24 @@ public abstract class BaseScreen implements Screen {
 		inputMultiplexer.addProcessor(screenProcessor);
 	}
 	
-	public void displayOptions() {}
+	public void displayOptions() {
+		
+		new ExitDialog() {
+
+			@Override
+			public void create() {
+				
+				Table dialogLayout = getContentTable();
+				
+			}
+			
+			@Override
+			public void hide() {
+				
+				super.hide();
+			}
+		}.show(HUD);
+	}
 	
 	public void displayAchievement(final Achievement achievement) {
 		
@@ -105,6 +122,34 @@ public abstract class BaseScreen implements Screen {
 		}.show(HUD);
 	}
 	
+	private void displayDeadNotif() {
+		
+		new ExitDialog() {
+
+			@Override
+			public void create() {
+				
+				Table dialogLayout = getContentTable();
+				
+				dialogLayout.add("CAT-astrophic news!");
+				dialogLayout.row();
+				
+				dialogLayout.add("Your dearly beloved cat has passed away").padTop(20);
+				dialogLayout.row();
+				
+				dialogLayout.add("In commemoration of this event your cat's soul has "
+						+ "been added to your inventory");
+			}
+			
+			@Override
+			public void hide() {
+				
+				super.hide();
+				qleek.player.abandonCat();
+			}
+		}.show(HUD);
+	}
+	
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -113,14 +158,28 @@ public abstract class BaseScreen implements Screen {
 	@Override
 	public void render(float delta) {
 
-		qleek.player.update(delta);
-		headerWidget.updateDisplay(qleek.player);
-		
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);	
+		updateLogic(delta);
+		draw();
 		
 		HUD.act(delta);
 		HUD.draw();
+	}
+	
+	public void updateLogic(float delta) {
+		
+		qleek.player.update(delta);
+		headerWidget.updateDisplay(qleek.player);
+		
+		if(qleek.player.getCat() != null) {
+			if(qleek.player.getCat().isDead())
+				displayDeadNotif();
+		}
+	}
+	
+	public void draw() {
+		
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class Qleek extends Game {
 		System.out.println(Gdx.graphics.getHeight());
 		
 		batch = new SpriteBatch();
-		skin = new Skin(Gdx.files.internal("ui-orange.json"));
+		skin = new Skin(Gdx.files.internal("ui/ui.json"));
 		
 		// File handling - loading section
 		FileHandle fileHandle;
@@ -179,6 +179,7 @@ public class Qleek extends Game {
 			affection = (int) (player.getAPS() * idleTime);
 		
 		player.addAffection(affection);
+		//player.getCat().update(idleTime);
 	}
 	
 	@Override
