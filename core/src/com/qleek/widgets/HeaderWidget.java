@@ -3,24 +3,21 @@ package com.qleek.widgets;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Player;
-import com.qleek.utils.TableUtils;
 
 public class HeaderWidget extends BaseWidget {
 	
-	private ImageButton backButton;
-	private TextButton optionsButton;
+	private ImageButton backButton, optionsButton;
 	private Label affectionLabel, apsLabel, meownyLabel;
 	
 	public HeaderWidget() {
 		
 		backButton = new ImageButton(uiSkin, "back");
-		optionsButton = new TextButton(".\n.\n.", uiSkin);
+		optionsButton = new ImageButton(uiSkin, "options");
+		
 		affectionLabel = new Label("", uiSkin);
 		apsLabel = new Label("", uiSkin);
 		meownyLabel = new Label("", uiSkin);
-		
 		create();
 	}
 	
@@ -35,21 +32,20 @@ public class HeaderWidget extends BaseWidget {
 		widgetLayout.defaults().expand();
 		
 		// Row One
-		widgetLayout.add(backButton).colspan(2).fill();
-		TableUtils.addBlankCells(widgetLayout, 7);
-		widgetLayout.add(optionsButton).fill();
+		widgetLayout.add(backButton).left();
+		widgetLayout.add(optionsButton).right();
 		widgetLayout.row();
 		
 		// Row Two
-		widgetLayout.add(affectionLabel).colspan(10).bottom();
+		widgetLayout.add(affectionLabel).colspan(2).bottom();
 		widgetLayout.row().top();
 		
 		// Row Three
-		widgetLayout.add(apsLabel).colspan(10).top();
+		widgetLayout.add(apsLabel).colspan(2).top();
 		widgetLayout.row();
 		
 		// Row Four
-		widgetLayout.add(meownyLabel).colspan(10).top().left();
+		widgetLayout.add(meownyLabel).colspan(2).top().left();
 				
 		// ----- End widgetLayout -----
 	}

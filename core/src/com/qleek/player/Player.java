@@ -5,11 +5,14 @@ import com.qleek.player.Item.ITEMID;
 import com.qleek.utils.Observable;
 
 public class Player extends Observable {
+	
+	private static final int PENALTY = 86400;
 
 	private Cat playerCat;
 	private int affection, aps, apsDelta, money;
-	private float cumulatedTime;
+	private float cumulatedTime, pTime;
 	private Array<Item> inventory, equips;
+	private boolean penalized;
 	
 	public Player() {	
 		
@@ -23,7 +26,7 @@ public class Player extends Observable {
 	
 	public void update(float delta) {
 		
-		if(playerCat == null || playerCat.isDead())
+		if(!hasCat())
 			return;
 		
 		cumulatedTime += delta;
@@ -36,7 +39,8 @@ public class Player extends Observable {
 			cumulatedTime -= 1;
 			apsDelta = 0;
 			
-			// Update cat every second
+			// Called once a second
+			updatePlayerLogic();
 			playerCat.update();
 			
 		} else {
@@ -47,19 +51,41 @@ public class Player extends Observable {
 		}
 	}
 	
+	public void updatePlayerLogic() {
+		updatePlayerLogic(1);
+	}
+	
+	public void updatePlayerLogic(double time) {
+		
+		if(isPenalized()) {
+			
+			pTime += time;
+			if(pTime >= PENALTY) {
+				
+				penalized = false;
+				pTime = 0;
+			}
+		}
+	}
+	
 	/*******************************************************************
 	 *						Getter Functions
 	 *******************************************************************/
 	public Cat getCat() { return playerCat; }
 	public Array<Item> getInventory() { return inventory; }
 	public Array<Item> getEquips()    { return equips;    }
+	public boolean isPenalized()      { return penalized; }
 	public int getAffection() { return affection; }
 	public int getAPS()       { return aps;       }
 	public int getMoney()     { return money;     }
+
 	
 	/*******************************************************************
 	 *						Setter Functions
 	 *******************************************************************/
+	public void penalize() {
+		penalized = true;
+	}
 	
 	public void setAffection(int affection) { 
 		this.affection = affection; 
@@ -76,7 +102,6 @@ public class Player extends Observable {
 	/*******************************************************************
 	 *						Money Related Functions
 	 *******************************************************************/
-	
 	public void addAffection(int value) {
 		affection += value;
 	}
@@ -104,7 +129,6 @@ public class Player extends Observable {
 	/*******************************************************************
 	 *						Item Related Fucntions
 	 *******************************************************************/
-	
 	public void addItem(Item item) {
 		
 		addAPS(item.getAPS());
@@ -175,6 +199,13 @@ public class Player extends Observable {
 	/*******************************************************************
 	 *						Cat Related Functions
 	 *******************************************************************/
+	public boolean hasCat() {
+		
+		if(playerCat == null || playerCat.isDead())
+			return false;
+		
+		return true;
+	}
 	
 	public void abandonCat() {
 		playerCat = null;

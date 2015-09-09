@@ -3,6 +3,7 @@ package com.qleek.utils;
 public class SoundManager extends Observer {
 	
 	private static SoundManager soundManager;
+	private boolean sound;
 
 	private SoundManager() {}
 	
@@ -13,6 +14,14 @@ public class SoundManager extends Observer {
 			soundManager = new SoundManager();
 		
 		return soundManager;
+	}
+	
+	public boolean sound() {
+		return sound;
+	}
+	
+	public void toggleSound() {
+		sound = !sound;
 	}
 
 	@Override

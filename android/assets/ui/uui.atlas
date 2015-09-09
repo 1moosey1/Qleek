@@ -1,0 +1,47 @@
+
+uui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+timewindow
+  rotate: false
+  xy: 1, 38
+  size: 104, 66
+  split: 49, 49, 34, 11
+  pad: 49, 49, 4, 38
+  orig: 104, 66
+  offset: 0, 0
+  index: -1
+exitwindow
+  rotate: false
+  xy: 107, 2
+  size: 64, 102
+  split: 6, 6, 46, 6
+  pad: 4, 4, 4, 62
+  orig: 64, 102
+  offset: 0, 0
+  index: -1
+defaultbuttondown
+  rotate: false
+  xy: 1, 1
+  size: 64, 35
+  split: 6, 6, 6, 9
+  orig: 64, 35
+  offset: 0, 0
+  index: -1
+defaultbuttonup
+  rotate: false
+  xy: 173, 69
+  size: 64, 35
+  split: 6, 6, 6, 9
+  orig: 64, 35
+  offset: 0, 0
+  index: -1
+defaultdisabled
+  rotate: false
+  xy: 173, 32
+  size: 64, 35
+  split: 6, 6, 6, 9
+  orig: 64, 35
+  offset: 0, 0
+  index: -1

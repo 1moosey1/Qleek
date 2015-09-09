@@ -9,8 +9,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.qleek.Qleek;
@@ -29,6 +33,8 @@ public abstract class BaseScreen implements Screen {
 	protected HeaderWidget headerWidget;
 	protected InputMultiplexer inputMultiplexer;
 	protected ScreenProcessor screenProcessor;
+	
+	private InputListener baseListener;
 	
 	public BaseScreen(Qleek game) {
 		
@@ -56,8 +62,7 @@ public abstract class BaseScreen implements Screen {
 			.height(Gdx.graphics.getHeight() * 0.20F);
 		screenLayout.row();
 		
-		// Inner class for handling header buttons (no reference saved)
-		InputListener headerListener = new InputListener() {
+		baseListener = new InputListener() {
 			
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -74,10 +79,20 @@ public abstract class BaseScreen implements Screen {
 				
 				else if(name == headerWidget.optionsButtonName())
 					displayOptions();
+				
+				else if(name == "adopt") {
+					
+				}
+				else if(name == "abandon") {
+					
+					System.out.println("Abandon has been called");
+					qleek.player.abandonCat();
+					qleek.player.penalize();
+				}
 			}
 		};
 		
-		headerWidget.addListener(headerListener);
+		headerWidget.addListener(baseListener);
 		
 		inputMultiplexer.addProcessor(HUD);
 		inputMultiplexer.addProcessor(screenProcessor);
@@ -92,12 +107,59 @@ public abstract class BaseScreen implements Screen {
 				
 				Table dialogLayout = getContentTable();
 				
-			}
-			
-			@Override
-			public void hide() {
+				dialogLayout.add("Options").colspan(4);
+				dialogLayout.row();
 				
-				super.hide();
+				TextButton adoptButton = new TextButton("Adopt a Cat", uiSkin);
+				adoptButton.setName("adopt");
+				if(qleek.player.hasCat())
+					adoptButton.setDisabled(true);
+				
+				dialogLayout.add(adoptButton).colspan(4).fill()
+					.padTop(20).padRight(20).padLeft(20);
+				dialogLayout.row();
+				
+				TextButton abandonButton = new TextButton("Abandon Cat", uiSkin);
+				abandonButton.setName("abandon");
+				if(!qleek.player.hasCat() || qleek.player.isPenalized())
+					abandonButton.setDisabled(true);
+				
+				dialogLayout.add(abandonButton).colspan(4).fill()
+					.padRight(20).padLeft(20);
+				dialogLayout.row();
+				
+				CheckBox onBox = new CheckBox("", uiSkin, "radio");
+				CheckBox offBox = new CheckBox("", uiSkin, "radio");
+				ButtonGroup<CheckBox> group = new ButtonGroup<CheckBox>(onBox, offBox);
+				
+				if(qleek.soundManager.sound())
+					onBox.setChecked(true);
+				else
+					offBox.setChecked(true);
+				group.setUncheckLast(true);
+				
+				dialogLayout.add(new Image(uiSkin.getRegion("soundon"))).padLeft(60).padTop(20);
+				dialogLayout.add(onBox).padTop(20).padRight(20);
+				dialogLayout.add(new Image(uiSkin.getRegion("soundoff"))).padTop(20);
+				dialogLayout.add(offBox).padTop(20).padRight(60);
+				
+				InputListener innerListener = new InputListener() {
+					
+					@Override
+					public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				 		return true; 
+				 	}
+					
+					@Override
+					public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+						hide(); 
+					}
+				};
+				
+				adoptButton.addListener(innerListener);
+				adoptButton.addListener(baseListener);
+				abandonButton.addListener(innerListener);
+				abandonButton.addListener(baseListener);
 			}
 		}.show(HUD);
 	}

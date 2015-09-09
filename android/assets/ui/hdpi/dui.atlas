@@ -1,0 +1,82 @@
+
+dui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+backbuttondown
+  rotate: false
+  xy: 1, 51
+  size: 74, 74
+  orig: 74, 74
+  offset: 0, 0
+  index: -1
+backbuttonup
+  rotate: false
+  xy: 77, 51
+  size: 74, 74
+  orig: 74, 74
+  offset: 0, 0
+  index: -1
+optionsdown
+  rotate: false
+  xy: 153, 51
+  size: 74, 74
+  orig: 74, 74
+  offset: 0, 0
+  index: -1
+optionsup
+  rotate: false
+  xy: 229, 51
+  size: 74, 74
+  orig: 74, 74
+  offset: 0, 0
+  index: -1
+checkboxcross
+  rotate: false
+  xy: 1, 1
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+checked
+  rotate: false
+  xy: 305, 77
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+radiooff
+  rotate: false
+  xy: 51, 1
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+radioon
+  rotate: false
+  xy: 355, 77
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+unchecked
+  rotate: false
+  xy: 101, 1
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+soundoff
+  rotate: false
+  xy: 305, 51
+  size: 29, 24
+  orig: 29, 24
+  offset: 0, 0
+  index: -1
+soundon
+  rotate: false
+  xy: 405, 101
+  size: 29, 24
+  orig: 29, 24
+  offset: 0, 0
+  index: -1

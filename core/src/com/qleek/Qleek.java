@@ -3,6 +3,7 @@ package com.qleek;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -23,44 +24,86 @@ import com.qleek.utils.UtilityListener;
 
 public class Qleek extends Game {
 	
-	public  static Skin skin;
-	private static int IDLECAP = 3600;
+	public static Skin skin;
+	private static final int IDLECAP = 3600;
 	
 	public SpriteBatch batch;
 	public Player player;
 	public Achievements achievements;
+	public SoundManager soundManager;
 	public UtilityListener achievementListener;
 	
 	public BaseScreen gameScreen, paegantScreen, shopScreen,
 		inventoryScreen, wwyScreen;
-	
 	public long timeStamp;
+	
+	private BitmapFont font;
+	private TextureAtlas uuiAtlas, duiAtlas;
 	
 	@Override
 	public void create () {
 		
 		Gdx.input.setCatchBackKey(true);
-		System.out.println(Gdx.graphics.getWidth());
-		System.out.println(Gdx.graphics.getHeight());
+		System.out.println("Width: " + Gdx.graphics.getWidth());
+		System.out.println("Height: " + Gdx.graphics.getHeight());
+		System.out.println("Density: " + Gdx.graphics.getDensity());
 		
-		batch = new SpriteBatch();
-		skin = new Skin(Gdx.files.internal("ui/ui.json"));
-		
-		// File handling - loading section
+		// Reusable Variables
 		FileHandle fileHandle;
-		
-		// Load game images
-		// Item images
 		TextureAtlas atlas;
 		
+		/*******************************************************************
+		 *					Check phone density (DPI)
+		 *******************************************************************/
+		float density = Gdx.graphics.getDensity();
+		String densityString = "";
+		
+		if(density <= 1)
+			densityString = "mdpi";
+		else if(density <= 1.5)
+			densityString = "hdpi";
+		else if(density <= 2)
+			densityString = "xhdpi";
+		else if(density <= 3)
+			densityString = "xxhdpi";
+		
+		/*******************************************************************
+		 *				Load skin, related regions and font
+		 *******************************************************************/
+		skin = new Skin();
+		
+		fileHandle = Gdx.files.internal("ui/" + densityString + "/font.fnt");
+		font = new BitmapFont(fileHandle);
+	    skin.add("default-font", font);
+		
+	    fileHandle = Gdx.files.internal("ui/" + densityString + "/dui.atlas");
+	    duiAtlas = new TextureAtlas(fileHandle);
+	    skin.addRegions(duiAtlas);
+	    
+	    fileHandle = Gdx.files.internal("ui/uui.atlas");
+	    uuiAtlas = new TextureAtlas(fileHandle);
+	    skin.addRegions(uuiAtlas);
+	    
+		fileHandle = Gdx.files.internal("ui/uui.json");
+		skin.load(fileHandle);
+		
+		/*******************************************************************
+		 *						Load game images
+		 *******************************************************************/
+		// Item images
 		fileHandle = Gdx.files.internal("item/ItemPack.pack");
 		atlas = new TextureAtlas(fileHandle);
 		Item.setAtlas(atlas);
 		
-		// Paegamt Images
+		// Paegant Images
 		fileHandle = Gdx.files.internal("paegant/paegant.pack");
 		atlas = new TextureAtlas(fileHandle);
 		Paegant.setAtlas(atlas);
+		
+		/*******************************************************************
+		 *							Initialization
+		 *******************************************************************/
+		batch = new SpriteBatch();
 		
 		// Initialize player
 		player = new Player();
@@ -84,10 +127,16 @@ public class Qleek extends Game {
 				((BaseScreen) Qleek.this.getScreen()).displayAchievement(achievement);
 			}
 		};
-		
 		achievements.addListener(achievementListener);
-		Observable.addObserver(achievements);
 		
+		soundManager = SoundManager.getInstance();
+		
+		Observable.addObserver(achievements);
+		Observable.addObserver(soundManager);
+		
+		/*******************************************************************
+		 *						Load in game text
+		 *******************************************************************/
 		// Load all the services in the game
 		fileHandle = Gdx.files.internal("data/service.meow");
 		Service.initServices(fileHandle.readString());
@@ -100,7 +149,9 @@ public class Qleek extends Game {
 		fileHandle = Gdx.files.internal("data/paegant.meow");
 		Paegant.initPaegants(fileHandle.readString());
 		
-		// Load game save data
+		/*******************************************************************
+		 *						Load save data
+		 *******************************************************************/
 		SaveManager saveManager = SaveManager.getInstance();
 		saveManager.readSave();
 		
@@ -179,7 +230,12 @@ public class Qleek extends Game {
 			affection = (int) (player.getAPS() * idleTime);
 		
 		player.addAffection(affection);
-		//player.getCat().update(idleTime);
+		
+		if(player.hasCat())
+			player.getCat().update(idleTime);
+		
+		if(player.isPenalized())
+			player.updatePlayerLogic(idleTime);
 	}
 	
 	@Override
@@ -193,6 +249,10 @@ public class Qleek extends Game {
 		shopScreen.dispose();
 		inventoryScreen.dispose();
 		wwyScreen.dispose();
+		
+		font.dispose();
+		uuiAtlas.dispose();
+		duiAtlas.dispose();
 		
 		SaveManager.getInstance().writeSave(this);
 	}
