@@ -12,7 +12,7 @@ public abstract class TimedDialog extends Dialog {
 
 	public TimedDialog() {
 		
-		super("", Qleek.skin, "timedialog");
+		super("", Qleek.skin);
 		setModal(false);
 		
 		timer = new Timer();

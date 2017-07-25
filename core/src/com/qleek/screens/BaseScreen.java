@@ -128,14 +128,14 @@ public abstract class BaseScreen implements Screen {
 					.padRight(20).padLeft(20);
 				dialogLayout.row();
 				
-				CheckBox onBox = new CheckBox("", uiSkin, "radio");
-				CheckBox offBox = new CheckBox("", uiSkin, "radio");
+				CheckBox onBox = new CheckBox("", uiSkin);
+				CheckBox offBox = new CheckBox("", uiSkin);
 				ButtonGroup<CheckBox> group = new ButtonGroup<CheckBox>(onBox, offBox);
 				
-				if(qleek.soundManager.sound())
-					onBox.setChecked(true);
-				else
-					offBox.setChecked(true);
+				//if(qleek.soundManager.sound())
+				//	onBox.setChecked(true);
+				//else
+				//	offBox.setChecked(true);
 				group.setUncheckLast(true);
 				
 				dialogLayout.add(new Image(uiSkin.getRegion("soundon"))).padLeft(60).padTop(20);

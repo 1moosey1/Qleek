@@ -3,17 +3,18 @@ package com.qleek.widgets;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.qleek.player.Player;
 
 public class HeaderWidget extends BaseWidget {
 	
-	private ImageButton backButton, optionsButton;
+	private TextButton backButton, optionsButton;
 	private Label affectionLabel, apsLabel, meownyLabel;
 	
 	public HeaderWidget() {
 		
-		backButton = new ImageButton(uiSkin, "back");
-		optionsButton = new ImageButton(uiSkin, "options");
+		backButton = new TextButton("Back", uiSkin);
+		optionsButton = new TextButton("Options", uiSkin);//, "options");
 		
 		affectionLabel = new Label("", uiSkin);
 		apsLabel = new Label("", uiSkin);
@@ -32,7 +33,7 @@ public class HeaderWidget extends BaseWidget {
 		widgetLayout.defaults().expand();
 		
 		// Row One
-		widgetLayout.add(backButton).left();
+		//widgetLayout.add(backButton).left();
 		widgetLayout.add(optionsButton).right();
 		widgetLayout.row();
 		
@@ -59,7 +60,7 @@ public class HeaderWidget extends BaseWidget {
 	
 	public void addListener(InputListener listener) {
 		
-		backButton.addListener(listener);
+		//backButton.addListener(listener);
 		optionsButton.addListener(listener);
 	}
 	

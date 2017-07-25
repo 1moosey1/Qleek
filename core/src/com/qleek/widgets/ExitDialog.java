@@ -12,10 +12,9 @@ public abstract class ExitDialog extends Dialog {
 	private ImageButton exitButton;
 	private InputListener exitListener;
 
-	
 	public ExitDialog() {
 		
-		super("", Qleek.skin, "exitdialog");
+		super("", Qleek.skin);
 		setModal(true);
 		setMovable(false);
 		

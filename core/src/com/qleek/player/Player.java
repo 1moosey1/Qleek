@@ -15,7 +15,8 @@ public class Player extends Observable {
 	private boolean penalized;
 	
 	public Player() {	
-		
+
+		playerCat = new Cat(Cat.CAT.QLEEK);
 		inventory = new Array<Item>();
 		equips = new Array<Item>();
 		equips.add(null);
@@ -201,8 +202,8 @@ public class Player extends Observable {
 	 *******************************************************************/
 	public boolean hasCat() {
 		
-		if(playerCat == null || playerCat.isDead())
-			return false;
+		//if(playerCat == null || playerCat.isDead())
+		//	return false;
 		
 		return true;
 	}

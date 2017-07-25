@@ -106,3 +106,66 @@ public class SaveManager {
 	public String[] getAchievementData() { return achieveData; }
 	public String[] getServiceData()     { return serviceData; }
 }
+
+/* Load save data ***************************************
+		SaveManager saveManager = SaveManager.getInstance();
+		saveManager.readSave();
+
+		if(saveManager.hasSaveData()) {
+
+			String[] saveData;
+
+			// Reward idle time
+			timeStamp = Long.parseLong(saveManager.getTimeData());
+			handleIdleTime();
+
+			// Load saved player data
+			saveData = saveManager.getPlayerData();
+			player.setAffection(Integer.parseInt(saveData[0]));
+			player.setAPS(Integer.parseInt(saveData[1]));
+			player.setMoney(Integer.parseInt(saveData[2]));
+
+			// Load saved inventory data
+			String[] itemData;
+			Array<Item> itemList = player.getInventory();
+
+			saveData = saveManager.getInventoryData();
+			for(int i = 1; i < saveData.length; i++) {
+
+				itemData = saveData[i].split(":");
+				Item item = new Item(ITEMID.valueOf(itemData[0]));
+				item.setQuantity(Integer.parseInt(itemData[1]));
+				item.setAPS(Integer.parseInt(itemData[2]));
+				itemList.add(item);
+			}
+
+			// Load saved equip data
+			itemList = player.getEquips();
+			saveData = saveManager.getEquipData();
+			for(int i = 0; i < saveData.length; i++) {
+
+				itemData = saveData[i].split(":");
+				if(!itemData[0].equals("0")) {
+
+					Item item = new Item(ITEMID.valueOf(itemData[0]));
+					item.setAPS(Integer.parseInt(itemData[1]));
+					itemList.set(i, item);
+				}
+			}
+
+			// Load saved achievement data
+			Achievement[] achieveList = Achievement.values();
+			saveData = saveManager.getAchievementData();
+			for(int i = 0; i < saveData.length; i++) {
+
+				boolean bValue = Boolean.parseBoolean(saveData[i]);
+				if(bValue)
+					achieveList[i].unlock();
+			}
+
+			// Load saved service data
+			Array<Service> serviceList = Service.serviceList;
+			saveData = saveManager.getServiceData();
+			for(int i = 0; i < saveData.length; i++)
+				serviceList.get(i).setLevel(Integer.parseInt(saveData[i]));
+		}	*/
